@@ -1,0 +1,50 @@
+재귀 함수는 영어로 recursive function이라고 표현한다.
+재귀(再歸)는 "self-returning"을 의미하며, 재귀 함수는 함수가 자기 자신을 호출하는 프로그래밍 기법이다.
+
+팩토리얼 계산은 재귀 함수의 대표적인 예시이다.
+
+
+def factorial(n):
+    # 기본 사례: n이 0이거나 1일 때 1을 반환 (0!은 1임)
+    if n == 0 or n == 1:
+        return 1
+    # 재귀 사례: n이 1보다 클 때 n과 factorial(n-1)의 곱을 반환
+    else:
+        return n * factorial(n - 1)
+
+# 예시 실행
+print(factorial(5))  # 출력: 120 (5! = 5 * 4 * 3 * 2 * 1)
+
+이 예시에서 factorial 함수는 자기 자신을 호출하여 팩토리얼을 계산한다.
+
+factorial(5)를 호출하면 다음과 같은 과정으로 계산이 이루어진다.
+
+factorial(5) -> 5 * factorial(4)
+
+factorial(4) -> 4 * factorial(3)
+
+factorial(3) -> 3 * factorial(2)
+
+factorial(2) -> 2 * factorial(1)
+
+factorial(1) -> 1 (기본 사례에 도달)
+
+
+
+이제 factorial(1) = 1 에서부터 차례대로 올라가며 최종 결과가 반환된다!
+
+factorial(1) = 1
+
+
+factorial(2) = 2 * 1 = 2
+
+factorial(3) = 3 * 2 = 6
+
+factorial(4) = 4 * 6 = 24
+
+factorial(5) = 5 * 24 = 120
+
+따라서 factorial(5)의 결과는 120이 된다.
+
+이렇게 기본 사례에 도달해서 기본값이 반환되면, 거기서부터 계산된 결과가 거꾸로 올라가면서 최종 결과를 반환한다.
+재귀 함수는 문제를 더 작은 단위로 분할하여 해결하는 데 매우 유용하지만, 잘못 설계되면 무한 재귀에 빠질 수 있으니 주의해야 한다.
