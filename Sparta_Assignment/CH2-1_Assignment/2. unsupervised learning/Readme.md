@@ -44,7 +44,8 @@
 - 데이터셋 탐색 및 전처리:
     - 결측치 처리
     - 스케일링
-        - 데이터의 스케일을 조정하기 위해 표준화(Standardization) 또는 정규화(Normalization)를 수행합니다
+        - 데이터의 스케일을 조정하기 위해 표준화(Standardization) 또는 정규화(Normalization)를 수행합니다.
+        - 범주형 데이터를 인코딩해줍니다.
 - 클러스터링 기법 적용:
     - K-means
     - 계층적 군집화
