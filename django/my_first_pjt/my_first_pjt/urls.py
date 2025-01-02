@@ -30,5 +30,6 @@ urlpatterns = [
     path("index/", views.index), # index/라는 url 패턴으로 들어오면 articles 앱의 view 모듈 안에 있는 인덱스 함수(뷰)로 요청을 보내라는 뜻
     path("users/", views.users),
     path("hello/", views.hello),
-    
+    path("data-throw/", views.data_throw),
+    path("data-catch/", views.data_catch),
 ]
