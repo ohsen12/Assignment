@@ -1,6 +1,5 @@
 # settings.py 파일은 Django 프로젝트의 설정과 구성을 관리하는 중심 파일입니다. 이 파일을 통해 다양한 프로젝트 설정을 정의할 수 있어요.
-
-# 'python manage.py startapp <앱 이름>' 앱을 설정하면 settings.py의 INSTALLED_APPS에 등록해줘야 한다. (리스트 끝에 '앱이름' 추가해주고 뒤에 트레일링 콤마 붙이기)
+# 'django-admin startproject <프로젝트 이름> <생성 디렉토리>' 해서 프로젝트를 생성하고,'python manage.py startapp <앱 이름>'으로 '앱을 설정'하면, 해당 앱을 settings.py의 INSTALLED_APPS에 '앱을 등록'해줘야 합니다. (리스트 끝에 '앱이름' 추가해주고 뒤에 트레일링 콤마 붙이기)
 
 """
 Django settings for my_first_pjt project.
