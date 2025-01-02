@@ -60,7 +60,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [],
-        "APP_DIRS": True,
+        "APP_DIRS": True, # 파일을 찾을 때 앱 안쪽 경로도 찾아보라는 옵션
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",

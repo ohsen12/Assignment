@@ -11,9 +11,22 @@ from django.shortcuts import render
 # 함수형 뷰: 첫 번째 인자로 요청을 받는다. 이 요청은 장고가 알아서 넘겨준다.
 def index(request): 
     '''
-    index/라는 패턴으로 요청이 들어오면 이 뷰랑 연결되어 처리된다.
-    
-    render 함수가 어떤 템플릿으로 요청을 처리해서 반환할 건지.
+    index/라는 url 패턴으로 요청이 들어오면 이 함수형 뷰랑 연결되어 처리된다.
+    이 뷰에서는 render 함수가 index.html이라는 템플릿(화면 관련)을 가져와 렌더링을 거쳐서 그대로 반환한다.
     '''
     return render(request,'index.html')
 
+def users(request):
+    return render(request,'users.html')
+
+def hello(request):
+    name = '세은'
+    tags = ['python','장고','html']
+    books = ['채식주의자','이상한 편의점']
+    
+    context = {
+        'name' : name,
+        'tags' : tags,
+        'books' : books,
+    }   
+    return render(request,'hello.html',context)
