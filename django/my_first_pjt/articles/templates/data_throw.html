@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{%block content%}
+<h1>이곳은 데이터를 전송하는 페이지입니다.</h1>
+{% comment %}
+
+<form> 태그는 HTML 문법이며, 웹 페이지에서 사용자 입력을 받아 서버로 제출하는 데 사용된다.
+<form> 태그의 주요 요소:
+    action: 데이터를 전송할 URL을 지정한다. 지정하지 않을 경우 현재 페이지의 url로 전송한다.
+    method: 데이터를 전송하는 방법을 지정한다.(GET 또는 POST 방식)
+즉, 데이터를 어디로(action) 어떤 방식(method)를 이용해서 보낼지 결정하는 속성
+
+GET 방식은 데이터를 서버로 전송할 때 쿼리스트링(데이터를 url 주소에 포함시켜 전송하는 방식)을 사용해서 전송한다.
+쿼리스트링 : 데이터를 url 주소에 포함시켜 전송하는 방식. ? 뒤에 데이터가 위치하고, &로 연결된 key=value 형태로 구성됨
+
+{% endcomment %}
+<form action="" method="GET">
+    <lable for "message">데이터 입력 : </label> {#입력필드의 이름#}
+    <input type="text" id="message" name="message"> {#입력필드의 유형과 고유식별자 지정#}
+    <input type="submit">
+</form>
+
+{%endblock content%}

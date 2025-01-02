@@ -59,7 +59,7 @@ ROOT_URLCONF = "my_first_pjt.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR/'templates'], # BASE_DIR까지 뒤져서 찾아줘라
         "APP_DIRS": True, # 파일을 찾을 때 앱 안쪽 경로도 찾아보라는 옵션
         "OPTIONS": {
             "context_processors": [
