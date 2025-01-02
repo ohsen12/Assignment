@@ -1,3 +1,5 @@
+# settings.py 파일은 Django 프로젝트의 설정과 구성을 관리하는 중심 파일입니다. 이 파일을 통해 다양한 프로젝트 설정을 정의할 수 있어요.
+
 """
 Django settings for my_first_pjt project.
 
