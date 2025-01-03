@@ -8,4 +8,6 @@
         {%for book in books%}
         <li>{{book}} (글자수 : {{book|length}})</li>
         {%endfor%} {#for 루프의 끝을 나타내는 장고 탬플릿 태그#}
+    
+        <a href="{%url 'index'%}">홈(index)로 가기</a>
 {% endblock content%}

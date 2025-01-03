@@ -11,9 +11,9 @@ from . import views # 내 위치랑 같은 곳에서 임포트 하겠다.
 urlpatterns = [
 
 
-    path("hello/", views.hello),
-    path("data-throw/", views.data_throw),
-    path("data-catch/", views.data_catch),
+    path("hello/", views.hello, name = "hello"),
+    path("data-throw/", views.data_throw, name = "data-throw"),
+    path("data-catch/", views.data_catch, name = "data-catch"),
 
 
 ]
