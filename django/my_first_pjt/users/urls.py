@@ -12,7 +12,7 @@ from . import views
 urlpatterns = [
     
     # 앞에서 users/랑 일치해서 뒷부분만 넘어왔음. 뒷부분이랑만 일치하는지 보면 됨.
-    path("",views.users),
-    path("profile/<str:username>/",views.profile),
+    path("",views.users, name='users'),
+    path("profile/<str:username>/",views.profile, name='profile'),
 
 ]

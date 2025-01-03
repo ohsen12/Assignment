@@ -27,7 +27,8 @@ from articles import views
 # /의 유무와 상관없이 오늘 날의 웹에서는 이를 같은 것으로 인식하나, 장고에서는 /를 끝에 붙이는 것을 권장한다.
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("index/", views.index), # index/라는 url 패턴으로 들어오면 articles 앱의 view 모듈 안에 있는 인덱스 함수(뷰)로 요청을 보내라는 뜻
+    path("index/", views.index, name='index'), # index/라는 url 패턴으로 들어오면 articles 앱의 view 모듈 안에 있는 인덱스 함수(뷰)로 요청을 보내라는 뜻
+    
     #include
     path("articles/", include("articles.urls")), # 앞이 articles/랑 일치하면 뒤 나머지는 articles.urls 일로 보내서 처리해
     path("users/", include("users.urls")), # 앞이 users/랑 일치하면 뒤 나머지는 users.urls 일로 보내서 처리해
