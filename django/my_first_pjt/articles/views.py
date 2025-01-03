@@ -16,8 +16,6 @@ def index(request):
     '''
     return render(request,'index.html')
 
-def users(request):
-    return render(request,'users.html')
 
 def hello(request):
     name = '세은'
@@ -31,8 +29,10 @@ def hello(request):
     }   
     return render(request,'hello.html',context)
 
+
 def data_throw(request):
     return render(request,'data_throw.html')
+
 
 def data_catch(request):
     '''
@@ -47,6 +47,7 @@ def data_catch(request):
     템플릿에서 contex 딕셔너리에 정의된 변수들을 사용하여 HTML 페이지를 만들 수 있다는 것이다. 
     근데 이때 context를 세 번째 인자로 전달하지 않으면 템플릿에서 변수를 사용할 수 없어서, HTML 출력에 동적 데이터가 포함되지 않게 되니 주의해야 한다!  
     '''
-    message = request.GET.get("message") # 서버로 전송된 message라는 키에 있는 값이 담김
+    message = request.GET.get("message") # 서버로 데이터가 message라는 키값으로 전송되니까 딕셔너리의 get 메서드를 사용해서 해당 키의 값을 꺼내오는 것임
     context = {"message": message}
     return render(request,'data_catch.html',context)
+

@@ -19,7 +19,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from articles import views
 
 
@@ -28,8 +28,7 @@ from articles import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("index/", views.index), # index/라는 url 패턴으로 들어오면 articles 앱의 view 모듈 안에 있는 인덱스 함수(뷰)로 요청을 보내라는 뜻
-    path("users/", views.users),
-    path("hello/", views.hello),
-    path("data-throw/", views.data_throw),
-    path("data-catch/", views.data_catch),
+    #include
+    path("articles/", include("articles.urls")), # 앞이 articles/랑 일치하면 뒤 나머지는 articles.urls 일로 보내서 처리해
+    path("users/", include("users.urls")), # 앞이 users/랑 일치하면 뒤 나머지는 users.urls 일로 보내서 처리해
 ]
