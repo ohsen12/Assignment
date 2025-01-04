@@ -11,10 +11,14 @@ from . import views # 내 위치랑 같은 곳에서 임포트 하겠다.
 urlpatterns = [
 
     path("", views.articles, name = "articles"),
-    path("data-throw/", views.data_throw, name = "data-throw"),
-    path("data-catch/", views.data_catch, name = "data-catch"),
     path("new/", views.new, name = 'new'),
     path("create/", views.create, name="create"),
+    path("<int:pk>/", views.article_detail, name="article_detail"), # <>는 변수로 들어올 값. 따라서 뷰 함수에서 이를 받을 매개변수를 만들어놔야 한다.
+    path("<int:pk>/delete/", views.delete, name="delete"),
+    path("<int:pk>/edit", views.edit, name="edit"),
+    path("<int:pk>/update/", views.update, name="update"),
     
+    path("data-throw/", views.data_throw, name = "data-throw"),
+    path("data-catch/", views.data_catch, name = "data-catch"),
 
 ]

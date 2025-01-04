@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<h1>아티클을 수정하는 페이지입니다.</h1>
+
+<form action="{% url 'update' article.pk %}" method="POST">
+	{% csrf_token %}
+    <label for="title">제목</label>
+    <input type="text" name="title" id="title" value={{ article.title }}><br><br>
+
+    <label for="content">내용</label>
+    <textarea name="content" id="content" cols="30" rows="10">{{ article.content }}</textarea><br><br>
+    
+    {#일단은 context로 받아온 변수에 담아 보여주고, 그거 사용자가 수정해서 저장 버튼 누르면 입력된 데이터가 update url로 해당 pk값과 함께 전달되게 된다. #}
+
+    <button type="submit">저장</button>
+</form>
+
+
+{% endblock content %}
