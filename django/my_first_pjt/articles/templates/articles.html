@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>이곳은 아티클 페이지입니다.</h1>
-    {% for article in articles %}
-    <p>{{article.title}}</p>
-    <p>{{article.content}}</p>
+    <h1>📖 이곳은 아티클 페이지입니다. </h1>
+
+    <a href="{% url "new" %}">새로운 아티클 작성하러 가기</a><br><br>
+    <a href="{% url "index" %}">홈(인덱스)으로 가기</a><br><br>
+    <hr>
+
+    {% for article in articles %} {#여기서 articles는 뷰 함수에서 context로 받은 것#}
+    
+    <a href="{% url 'article_detail' article.pk%}">
+    <p>[{{article.id}}]{{article.title}}</p>
+    </a> {#글제목 클릭하면 이동할 수 있게 앵커태그 안에 넣어주고 url이랑 해당 pk값 변수로 할당하기#}
+    
     <hr>
     {% endfor %}
-    
 
-    <a href="{% url "index" %}">홈(인덱스)으로 가기</a>
 {%endblock content%}
