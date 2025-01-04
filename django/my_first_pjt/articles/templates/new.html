@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{%block content%}
+<h1>새로운 아티클</h1>
+
+<form action="{% url 'create' %}" method="GET">
+    <label for="title">제목</label> {#label의 for이랑 input의 id랑 일치해야 한다.#}
+    <input type="text" name="title" id="title"><br><br> {# 콤마 안 찍는 거 주의 #}
+     {# ⭐️name 속성이 있어야 서버가 데이터를 받아서 식별할 수 있다 #}
+
+    <label for="content">내용</label>
+    <textarea name="content" id="content" cols="30" rows="10"></textarea><br><br>
+
+    <button type="submit">저장 버튼(폼 데이터를 서버로 제출)</button>
+</form>
+
+
+{% endblock content %}

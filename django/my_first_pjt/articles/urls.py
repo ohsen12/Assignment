@@ -10,10 +10,11 @@ from . import views # 내 위치랑 같은 곳에서 임포트 하겠다.
 # /의 유무와 상관없이 오늘 날의 웹에서는 이를 같은 것으로 인식하나, 장고에서는 /를 끝에 붙이는 것을 권장한다.
 urlpatterns = [
 
-
-    path("hello/", views.hello, name = "hello"),
+    path("", views.articles, name = "articles"),
     path("data-throw/", views.data_throw, name = "data-throw"),
     path("data-catch/", views.data_catch, name = "data-catch"),
-
+    path("new/", views.new, name = 'new'),
+    path("create/", views.create, name="create"),
+    
 
 ]
