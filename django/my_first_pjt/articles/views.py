@@ -2,6 +2,8 @@
 
 from django.shortcuts import render, redirect
 from .models import Article
+from .forms import ArticleForm
+
 
 # Create your views here.
 # 뷰를 작성하는 방법에는 함수형 뷰와 클래스형 뷰가 있다.
@@ -35,7 +37,10 @@ def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, �
     
 
 def new(request):
-    return render(request,'new.html')
+    # forms.py에서 정의해놓은 ArticleForm 클래스 사용해서, 폼 들고와서 context로 넘겨줌
+    form = ArticleForm() 
+    context = {"form": form,}
+    return render(request, "new.html", context)
 
 def create(request):
     # POST 방식으로 전달된 데이터 꺼내기

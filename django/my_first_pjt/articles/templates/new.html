@@ -7,16 +7,24 @@
 <form action="{% url 'create' %}" method="POST">
     {% csrf_token %} {# 포스트 방식 사용하면 반드시 토큰 탬플릿 태그를 넣어줘여 함#}
 
-    <label for="title">제목</label> {#label의 for이랑 input의 id랑 일치해야 한다.#}
-    <input type="text" name="title" id="title"><br><br> {# 콤마 안 찍는 거 주의 #}
-     {# ⭐️서버로 name 키의 value 값으로 input에 입력된 값이 전송되기 때문에, name 속성이 있어야만 서버로 입력값이 전송된다. #}
-
-    <label for="content">내용</label>
-    {#input 대신에 textarea 태그를 사용할 수 있다.#}
-    <textarea name="content" id="content" cols="30" rows="10"></textarea><br><br>
-
+    {{form.as_p}} {# 뷰에서 넘겨준 장고 폼을 p태그에 감싸서 렌더링하겠음. #}
+ 
     <button type="submit">저장 버튼(폼 데이터를 서버로 제출하기)</button>
 </form> <br><br>
 
 <a href="{% url 'articles'%}">아티클 목록으로 가기</a>
 {% endblock content %}
+
+
+
+{% comment %} 
+장고 폼 사용하지 않고 다음과 같이 직접 커스텀하는 방법도 있음.
+
+<label for="title">제목</label> {#label의 for이랑 input의 id랑 일치해야 한다.#}
+<input type="text" name="title" id="title"><br><br> {# 콤마 안 찍는 거 주의 #}
+ {# ⭐️서버로 name 키의 value 값으로 input에 입력된 값이 전송되기 때문에, name 속성이 있어야만 서버로 입력값이 전송된다. #}
+
+<label for="content">내용</label>
+{#input 대신에 textarea 태그를 사용할 수 있다.#}
+<textarea name="content" id="content" cols="30" rows="10"></textarea><br><br> 
+{% endcomment %}
