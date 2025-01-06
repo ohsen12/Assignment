@@ -15,7 +15,7 @@ def index(request):
     index/라는 url 패턴으로 요청이 들어오면 이 함수형 뷰랑 연결되어 처리된다.
     이 뷰에서는 render 함수가 index.html이라는 템플릿(화면 관련)을 가져와 렌더링을 거쳐서 그대로 반환한다.
     '''
-    return render(request,'index.html')
+    return render(request,'articles/index.html')
 
 
 
@@ -26,7 +26,7 @@ def articles(request):
     context = {
         "articles" : articles
     }
-    return render(request,'articles.html',context)
+    return render(request,'articles/articles.html',context)
 
 
 def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, 두번째 인자가 들어올 구멍을 만들어 줘야 함.
@@ -34,7 +34,7 @@ def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, �
     context = {
       "article": article,
     }
-    return render(request, "article_detail.html", context)
+    return render(request, "articles/article_detail.html", context)
     
     
 # ⭐️ 이 부분만 제대로 이해하면 돼🥹
@@ -47,7 +47,7 @@ def create(request):
     else: # 새로운 아티클 작성하러 가기 앵커 태그(GET방식) 누르고 새 글 작성하러 온 거임
         form = ArticleForm() # 폼(입력양식) 만들어주고
         context = {"form": form} # 저장 버튼 눌러서 전송받으면 그거 활용해서 creat.html 랜더링 해서 보여줘
-    return render(request, "create.html", context) # 이제 해당 페이지에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
+    return render(request, "articles/create.html", context) # 이제 해당 페이지에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
 
 
 def update(request, pk):
@@ -68,7 +68,7 @@ def update(request, pk):
         "article": article,
     }
     # 생성한 입력 폼이랑 해당 객체 context에 담아서 update.html 에서 활용하고 랜더링해서 보여줌
-    return render(request, "update.html", context) # 이제 update.html에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
+    return render(request, "article/update.html", context) # 이제 update.html에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
 
 
 def delete(request, pk):
@@ -83,7 +83,7 @@ def delete(request, pk):
 
 
 def data_throw(request):
-    return render(request,'data_throw.html')
+    return render(request,'articles/data_throw.html')
 
 
 def data_catch(request):
@@ -101,4 +101,4 @@ def data_catch(request):
     '''
     message = request.GET.get("message") # 서버로 데이터가 message라는 키값으로 전송되니까 딕셔너리의 get 메서드를 사용해서 해당 키의 값을 꺼내오는 것임
     context = {"message": message}
-    return render(request,'data_catch.html',context)
+    return render(request,'articles/data_catch.html',context)
