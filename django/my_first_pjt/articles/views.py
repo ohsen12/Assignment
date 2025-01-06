@@ -28,6 +28,7 @@ def articles(request):
     }
     return render(request,'articles.html',context)
 
+
 def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, 두번째 인자가 들어올 구멍을 만들어 줘야 함.
     article = Article.objects.get(pk=pk) # id가 넘겨받은 인자랑 같은 레코드 가져오기
     context = {
@@ -35,23 +36,39 @@ def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, �
     }
     return render(request, "article_detail.html", context)
     
-
-def new(request):
-    # forms.py에서 정의해놓은 ArticleForm 클래스 사용해서, 폼 들고와서 context로 넘겨줌
-    form = ArticleForm() 
-    context = {"form": form,}
-    return render(request, "new.html", context)
-
-def create(request):
-    # POST 방식으로 전달된 데이터 꺼내기
-    title = request.POST.get("title")
-    content = request.POST.get("content")
     
-    # 받은 데이터를 Article 모델을 이용해서 데이터베이스에 저장
-    article = Article(title=title, content=content)
-    article.save()
-    # articles url로 이동해라(입력된 내용 데이터베이스에 저장하고 url 이동했으니까 이제 해당 페이지에선 추가된 아티클까지 보이는 거임.)
-    return redirect("article_detail", article.id) # 어떤 pk값으로 갈 지도 변수로 넘겨줘야 한다. 저렇게 써주면 알아서 매핑됨(아, 그렇구나~)
+# ⭐️ 이 부분만 제대로 이해하면 돼🥹
+def create(request):
+    if request.method == "POST": # 새글 작성하고 저장 누른 거임. 이제 데이터베이스에 전송받은 글 저장해야지.
+        form = ArticleForm(request.POST) # form에 request.POST에 있는(전송받은) 데이터 채워
+        if form.is_valid(): # form 형식에 맞으면
+            article = form.save() # DB에 저장하고
+            return redirect("articles:article_detail", article.id) # 저장된 해당 글 상세페이지로 넘어가기
+    else: # 새로운 아티클 작성하러 가기 앵커 태그(GET방식) 누르고 새 글 작성하러 온 거임
+        form = ArticleForm() # 폼(입력양식) 만들어주고
+        context = {"form": form} # 저장 버튼 눌러서 전송받으면 그거 활용해서 creat.html 랜더링 해서 보여줘
+    return render(request, "create.html", context) # 이제 해당 페이지에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
+
+
+def update(request, pk):
+    # 일단 해당 글 가져와서 객체에 넣어놔
+    article = Article.objects.get(pk=pk)
+    
+    if request.method == "POST": # 글 수정하고 저장 누른 거임.
+        form = ArticleForm(request.POST, instance=article) # 양식이 유효하면 데이터베이스에 다시 저장하고
+        if form.is_valid():
+            article = form.save()
+            return redirect("articles:article_detail", article.pk) # 해당 아티클 상세페이지로 돌아가.
+
+    else: # 글 수정 앵커 태그(GET 방식) 누르고 글 수정하러 온 거임
+        # instance : ArticleForm을 생성할 때 article 객체를 기반으로 폼을 생성하도록 하는 매개변수
+        form = ArticleForm(instance=article)  # 입력폼에 기존 글 채워서 보여주고
+    context = {
+        "form": form,
+        "article": article,
+    }
+    # 생성한 입력 폼이랑 해당 객체 context에 담아서 update.html 에서 활용하고 랜더링해서 보여줌
+    return render(request, "update.html", context) # 이제 update.html에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
 
 
 def delete(request, pk):
@@ -60,34 +77,9 @@ def delete(request, pk):
     if request.method == "POST":
         article.delete()
         # 아티클 목록 페이지로 이동
-        return redirect("articles")
+        return redirect("articles:articles")
     # 포스트 방식으로 들어온 거 아니면 삭제 안하고 그냥 해당 pk값 상세페이지 보여줌
-    return redirect("article_detail", article.pk)
-
-
-def edit(request, pk):
-    # pk 값에 해당하는 레코드를 가져옴
-    article = Article.objects.get(pk=pk)
-    # 해당 레코드를 context에 담아 템플릿에서 활용할 수 있게함
-    context = { "article" : article, }
-    # context를 활용한 템플릿을 렌더링해서 화면에 보여줌
-    return render(request, 'edit.html', context)
-
-
-def update(request, pk):
-    # pk 값에 해당하는 레코드를 가져옴
-    article = Article.objects.get(pk=pk)
-    
-    # POST 방식으로 전달된 데이터를 꺼내서 해당 컬럼에 할당해주기(컬럼 데이터 수정)
-    article.title = request.POST.get("title")
-    article.content = request.POST.get("content")
-    
-    # 변경된 데이터를 데이터베이스에 저장(수정 완료)
-    article.save()
-    
-    # 다시 해당 상세페이지로 돌아감(수정된 결과가 나옴)
-    return redirect("article_detail", article.pk)
-
+    return redirect("articles:article_detail", article.pk)
 
 
 def data_throw(request):

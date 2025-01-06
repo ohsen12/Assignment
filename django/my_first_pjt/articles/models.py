@@ -2,6 +2,8 @@
 
 from django.db import models
 
+# ❗️ 모델 파일에서 변경사항이 있으면 꼭 마이그레이션 해야된다는 것 잊지 말기 ❗️
+
 # Create your models here.
 
 # 모델 정의 기본구조. 모든 모델은 models.Model의 서브 클래스로 표현된다. 
@@ -13,6 +15,7 @@ class Article(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True) # auto_now_add=True : 새로운 행(레코드)가 '생성될 때'의 날짜와 시간을 자동으로 설정한다. 이후에 레코드가 업데이트되더라도 이 필드는 변경되지 않고 레코드가 처음 생성된 시점을 나타낸다.
     updated_at = models.DateTimeField(auto_now=True) # 행(레코드)이 생성되거나 '저장될 때마다' 해당 필드에 현재 날짜와 시간이 자동으로 설정됨. 즉, 레코드가 변경될 때마다 이 필드는 업데이트된다.
+    
     
     def __str__(self): # 클래스를 문자열 취급했을 때 어떻게 보여줄 지 결정하는 매직메서드
         return self.title

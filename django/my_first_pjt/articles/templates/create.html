@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {%block content%}
-<h1>새로운 아티클</h1>
+<h1>새로운 아티클 작성하기</h1>
 
                {#사용자가 압력한 데이터를 전송할 url#} {# 현재 DB에 변화를 주는 행위를 할 거기 때문에 POST 방식을 사용해야 한다(약속임.)#}
-<form action="{% url 'create' %}" method="POST">
+<form action="{% url 'articles:create' %}" method="POST">
     {% csrf_token %} {# 포스트 방식 사용하면 반드시 토큰 탬플릿 태그를 넣어줘여 함#}
 
     {{form.as_p}} {# 뷰에서 넘겨준 장고 폼을 p태그에 감싸서 렌더링하겠음. #}
@@ -12,7 +12,7 @@
     <button type="submit">저장 버튼(폼 데이터를 서버로 제출하기)</button>
 </form> <br><br>
 
-<a href="{% url 'articles'%}">아티클 목록으로 가기</a>
+<a href="{% url 'articles:articles'%}">아티클 목록으로 가기</a>
 {% endblock content %}
 
 

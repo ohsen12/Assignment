@@ -1,22 +1,17 @@
 # 반복되는 작업과 코드를 줄일 수 있는 Django Form
 
 from django import forms
+from articles.models import Article
 
-# 기본 구조 (모델 선언과 비슷!)
-class ArticleForm(forms.Form):
-    # 내가 이 Form에서 입력받고자 하는 데이터에 대한 명세
+# 모델을 보고 
+class ArticleForm(forms.ModelForm):
+    # ModelForm이 사용할 데이터를 Meta 클래스에 명시
+    class Meta:
+        # Aricle 모델을 사용해서 form을 만들거임
+        model = Article 
+        # fields 항목에 내가 form으로 만들고 싶은 항목들을 지정 (__all__은 모델의 모든 필드를 입력하게 하겠다.)
+        fields = "__all__"
+        # exclude = ["굳이 입력 안 받아도 되는 컬럼"]
+
     
-    # 앞은 데이터베이스에 저장될 값, 뒤는 사용자에게 보여질 값
-    GENRE_CHOICES = [
-        ("technology", "기술"),
-        ("life", "생활"),
-        ("hobby", "취미"),
-        ("ets", "기타")
-    ]
-    
-    # 제목 입력
-    title = forms.CharField(max_length=50) 
-    # 내용 입력
-    content = forms.CharField(widget=forms.Textarea)
-    genre = forms.ChoiceField(choices=GENRE_CHOICES)
     

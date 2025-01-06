@@ -6,19 +6,21 @@
     <p>제목: {{ article.title }}</p>
     <p>내용: {{ article.content }}</p>
     <p>작성일시: {{ article.created_at }}</p>
-    <p>수정일시: {{ article.updated_at }}</p><br>
+    <p>수정일시: {{ article.updated_at }}</p>
 
-    <a href="{% url 'articles' %}">아티클 목록으로 가기</a><br><br>
+    <br>
+
+    <a href="{% url 'articles:articles' %}">아티클 목록으로 가기</a><br><br>
     
     
     {#해당 아티클 삭제하기 위해 delete url로 보내기. DB 조작하는 거니까 포스트 방식을 사용한다.#}
-    <form action="{% url 'delete' article.pk %}" method="POST">
+    <form action="{% url 'articles:delete' article.pk %}" method="POST">
         {% csrf_token %}
         <input type="submit" value="글 삭제"> 
         {# delete url로 pk값을 포스트 방식으로 보내서, delete 뷰 함수로 이어지게 함 (해당 pk값의 레코드를 삭제) #}
     </form> <br>
 
-    <a href="{% url 'edit' article.pk %}"><button>글 수정하러 가기</button></a>
+    <a href="{% url 'articles:update' article.pk %}"><button>글 수정하러 가기</button></a>
 
 
 {% endblock content %}
