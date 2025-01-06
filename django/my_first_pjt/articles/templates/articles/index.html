@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-
+{% load static %} {#정적 파일을 참조하는 데 사용되는 static 태그를 사용하려면 먼저 이 태그를 추가해야 한다.#}
 {%block content%}
     <h1>안녕하세요! django로 만든 웹페이지입니다🥳</h1>
     <div>
@@ -8,8 +8,10 @@
     </div>
     <br>
 
+    <img src="{% static "articles/friends.jpg" %}" alt="칭긔칭긔(이미지 로딩 실패시 대체 텍스트)">
+    <br><br>
     <a href="{% url 'articles:data-throw'%}">데이터 전송 페이지로 이동</a><br>
     <a href="{% url 'users:users'%}">사용자 페이지로 이동</a><br>
     <a href="{% url 'articles:articles' %}">아티클 목록으로 이동</a><br>
 
-    {%endblock content%}
+{%endblock content%}

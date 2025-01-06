@@ -124,7 +124,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "static/" # 이거는 실제 디렉토리 경로가 아님 주의!
+# 기본적으로 베이스 디렉토리의 static을 뒤져라
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STAEIC_ROOT = BASE_DIR / "staticfiles"  # 이거는 배포할 때 사용하는 부분
+
+# Media Files 
+# 유저가 업로드하면 베이스 디렉토리에 미디어라는 파일이 생기고 이제 그 아래쪽에 다 업로드 될 것임
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

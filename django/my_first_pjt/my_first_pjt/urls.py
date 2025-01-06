@@ -20,7 +20,8 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from articles import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 # 특정 url 패턴으로 들어왔을 때(주소창), 어떠한 뷰로 보낼지를 결정하는 곳
@@ -37,3 +38,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
 
 ]
+
+# 디버그 모드(개발 모드일 때만) 정적 파일들을 서빙하는 기능을 더해
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

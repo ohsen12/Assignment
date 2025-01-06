@@ -1,4 +1,6 @@
 # 반복되는 작업과 코드를 줄일 수 있는 Django Form
+# 보통 forms.py 파일에는 기본 폼 클래스를 상속받아 만든 사용자 정의 폼을 넣어 둔다.
+# 이를 통해 Django 기본 폼 기능을 확장하거나 커스터마이징할 수 있다.
 
 from django import forms
 from articles.models import Article
