@@ -3,6 +3,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login # 사용자정의 함수랑 이름이 같아서 변경해주겠음
 from django.contrib.auth import logout as auth_logout # 사용자정의 함수랑 이름이 같아서 변경해주겠음
 from django.views.decorators.http import require_POST, require_http_methods
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm # 회원가입 폼
+from .forms import CustomUserChangeForm
+from django.contrib.auth import update_session_auth_hash
+
 
 # Create your views here.
 
@@ -33,3 +38,59 @@ def logout(request):
         auth_logout(request)
         # 얘가 알아서 요청까서 쿠키에 세션아이디 들어있으면 세션 테이블 열어서 이거 지워주고 쿠키에서 세션아이디 지워주는 것까지 다 해준다.
         return redirect("articles:index")
+    
+
+@require_http_methods(["GET","POST"])
+def signup(request):
+    if request.method == "POST": # 사용자가 회원가입 정보입력하고 submit 버튼 누른 거면
+        form = UserCreationForm(request.POST) # 바인딩 폼 만들어주기
+        if form.is_valid(): # 입력 데이터가 유효한 형식이라면
+            user = form.save() # 해당 폼 데이터 DB에 저장해주고 + 얘는 save 하는 순간 자기가 세이브한 인스턴스를 돌려줌.
+            auth_login(request, user) # 회원가입과 동시에 바로 로그인 시켜주기
+            return redirect("articles:index")
+    else:  # 그냥 회원가입하겠다고 바로 들어온 거면      
+        form = UserCreationForm() # 회원가입폼 만들어서 context에 담아 템플릿에 넘겨주기
+    context = {"form":form}
+    return render(request, "accounts/signup.html",context)
+
+
+@require_POST
+def delete(request):
+    if request.user.is_authenticated:
+        # 데이터베이스에서 해당 유저 삭제
+        request.user.delete()
+        # 삭제하고 바로 로그아웃(해당 유저 세션 지우기. 탈퇴하고, 세션 지우고 순서여야 함!)
+        auth_logout(request) 
+    return redirect("articles:index")
+
+
+@require_http_methods(["GET","POST"])
+def update(request): # 사용자가 수정한 데이터 담아서 다시 온 거
+    if request.method == "POST":
+        form = CustomUserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("articles:index")
+    
+    else: # 수정하러 링크타고 바로 들어온 거
+        form = CustomUserChangeForm(instance=request.user)
+    context = {"form":form}
+    return render(request, 'accounts/update.html',context)
+
+
+@login_required
+@require_http_methods(["GET","POST"])
+def change_password(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user,request.POST)
+        if form.is_valid():
+            form.save() # 비밀번호 변경완료. 근데 이러면 기존 세션 인증 정보랑 다르기 때문에 로그인이 풀리게 된다.
+            # 비밀번호 변경하고도 로그인 안 풀리게 해주기
+            update_session_auth_hash(request,form.user) 
+            return redirect("articles:index")
+    else:
+        form = PasswordChangeForm(request.user)
+    context = {"form":form}
+    return render(request, "accounts/change_password.html",context)
+
+    
