@@ -5,7 +5,6 @@
 from django.urls import path
 from . import views
 
-
 # url 네임스페이스 지정해주기
 app_name = "accounts"
 
@@ -17,5 +16,6 @@ urlpatterns = [
     path("delete/", views.delete, name="delete"),
     path("update/", views.update, name="update"),
     path("password/", views.change_password, name="change_password"),
+    
     
 ]

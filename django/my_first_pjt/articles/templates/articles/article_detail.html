@@ -3,6 +3,10 @@
 {% block content %}
 
     <h1>아티클 상세 페이지</h1>
+    {% if article.image %}
+		<img src="{{ article.image.url }}" > {# 실제 이미지를 넣는게 아님!#}
+    {% endif %}		
+
     <p>제목: {{ article.title }}</p>
     <p>내용: {{ article.content }}</p>
     <p>작성일시: {{ article.created_at }}</p>

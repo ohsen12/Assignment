@@ -40,6 +40,7 @@ def logout(request):
         return redirect("articles:index")
     
 
+# 회원가입 뷰
 @require_http_methods(["GET","POST"])
 def signup(request):
     if request.method == "POST": # 사용자가 회원가입 정보입력하고 submit 버튼 누른 거면
@@ -85,7 +86,7 @@ def change_password(request):
         form = PasswordChangeForm(request.user,request.POST)
         if form.is_valid():
             form.save() # 비밀번호 변경완료. 근데 이러면 기존 세션 인증 정보랑 다르기 때문에 로그인이 풀리게 된다.
-            # 비밀번호 변경하고도 로그인 안 풀리게 해주기
+            # 비밀번호 변경하고도 로그인 안 풀리게 해주는 거 (아,그렇구나 ~)
             update_session_auth_hash(request,form.user) 
             return redirect("articles:index")
     else:

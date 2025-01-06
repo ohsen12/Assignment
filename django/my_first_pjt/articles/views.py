@@ -45,7 +45,7 @@ def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, �
 @login_required
 def create(request):
     if request.method == "POST": # 새글 작성하고 저장 누른 거임. 이제 데이터베이스에 전송받은 글 저장해야지.
-        form = ArticleForm(request.POST) # form에 request.POST에 있는(전송받은) 데이터 채워
+        form = ArticleForm(request.POST, request.FILES) # form에 request.POST에 있는(전송받은) 데이터 채워
         if form.is_valid(): # form 형식에 맞으면
             article = form.save() # DB에 저장하고
             return redirect("articles:article_detail", article.id) # 저장된 해당 글 상세페이지로 넘어가기
