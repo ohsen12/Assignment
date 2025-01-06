@@ -6,8 +6,10 @@
     <div>
         이것은 나의 첫 번째 장고 프로젝트입니다.
     </div>
+    <br>
+
     <a href="{% url 'articles:data-throw'%}">데이터 전송 페이지로 이동</a><br>
     <a href="{% url 'users:users'%}">사용자 페이지로 이동</a><br>
-    <a href="{% url 'articles:articles' %}">아티클 페이지로 이동</a><br>
+    <a href="{% url 'articles:articles' %}">아티클 목록으로 이동</a><br>
 
     {%endblock content%}

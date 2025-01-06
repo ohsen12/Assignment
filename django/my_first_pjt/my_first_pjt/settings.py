@@ -41,9 +41,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions", # django_extensions 설치하면 앱 등록해줘야 함
-    # 사용자 설정 앱 목록
+    # 사용자 설정 앱 목록(사용자가 직접 앱 생성했으면 여기에 앱 등록해줘야 함)
     "articles",
     "users",
+    "accounts",
     
 ]
 
