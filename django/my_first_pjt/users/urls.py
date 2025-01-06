@@ -6,6 +6,8 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
+# users url의 네임스페이스 지정
+app_name = "users"
 
 # 특정 url 패턴으로 들어왔을 때(주소창), 어떠한 뷰로 보낼지를 결정하는 곳
 # /의 유무와 상관없이 오늘 날의 웹에서는 이를 같은 것으로 인식하나, 장고에서는 /를 끝에 붙이는 것을 권장한다.
