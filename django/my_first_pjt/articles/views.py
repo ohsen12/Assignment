@@ -1,8 +1,10 @@
 # 요청을 처리하고 처리한 결과를 반환하는 파일
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Article
 from .forms import ArticleForm
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods, require_POST
 
 
 # Create your views here.
@@ -18,7 +20,6 @@ def index(request):
     return render(request,'articles/index.html')
 
 
-
 # 데이터베이스에서 Article 테이블을 전부 가져와서 화면에 보여주는 로직
 def articles(request): 
     articles = Article.objects.all().order_by("-id") # id(pk)을 기준으로 내림차순 정렬
@@ -30,7 +31,7 @@ def articles(request):
 
 
 def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, 두번째 인자가 들어올 구멍을 만들어 줘야 함.
-    article = Article.objects.get(pk=pk) # id가 넘겨받은 인자랑 같은 레코드 가져오기
+    article = get_object_or_404(Article, pk=pk) # id가 넘겨받은 인자랑 같은 레코드 가져오기, 없으면 404에러 내주기
     context = {
       "article": article,
     }
@@ -38,6 +39,10 @@ def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, �
     
     
 # ⭐️ 이 부분만 제대로 이해하면 돼🥹
+
+# 로그인이 되어있지 않은 상태에서 접근하면 settings.py에서 설정된 LOGIN_URL 경로(기본은 로그인 페이지)로 이동시킴
+# 기본적으로 LOGIN_URL 설정은 '/accounts/login/'로 되어 있다. 
+@login_required
 def create(request):
     if request.method == "POST": # 새글 작성하고 저장 누른 거임. 이제 데이터베이스에 전송받은 글 저장해야지.
         form = ArticleForm(request.POST) # form에 request.POST에 있는(전송받은) 데이터 채워
@@ -50,9 +55,11 @@ def create(request):
     return render(request, "articles/create.html", context) # 이제 해당 페이지에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
 
 
+@login_required # # 로그인이 되어있지 않은 상태에서 접근하면 settings.LOGIN_URL 에 설정된 경로(기본은 로그인 페이지)로 이동시킴
+@require_http_methods(["GET", "POST"]) # 요청이 이 방식일 때만 처리
 def update(request, pk):
     # 일단 해당 글 가져와서 객체에 넣어놔
-    article = Article.objects.get(pk=pk)
+    article = get_object_or_404(Article, pk=pk)
     
     if request.method == "POST": # 글 수정하고 저장 누른 거임.
         form = ArticleForm(request.POST, instance=article) # 양식이 유효하면 데이터베이스에 다시 저장하고
@@ -68,18 +75,18 @@ def update(request, pk):
         "article": article,
     }
     # 생성한 입력 폼이랑 해당 객체 context에 담아서 update.html 에서 활용하고 랜더링해서 보여줌
-    return render(request, "article/update.html", context) # 이제 update.html에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
+    return render(request, "articles/update.html", context) # 이제 update.html에서 submit 버튼 누르면 POST 방식으로 데이터를 담아 다시 이 뷰에 전송함.
 
 
+@require_POST # POST 요청일 떄만 처리
 def delete(request, pk):
-    article = Article.objects.get(pk=pk)
-    # 포스트 방식일 때만 해당 pk 데이터 삭제하고
-    if request.method == "POST":
+    # 로그인 된 상태에서 삭제 버튼 눌러야만 삭제해줌
+    if request.user.is_authenticated:
+        article = get_object_or_404(Article, pk=pk)
         article.delete()
-        # 아티클 목록 페이지로 이동
-        return redirect("articles:articles")
-    # 포스트 방식으로 들어온 거 아니면 삭제 안하고 그냥 해당 pk값 상세페이지 보여줌
-    return redirect("articles:article_detail", article.pk)
+        # 삭제하고 아티클 목록 페이지로 이동
+    # 로그인 안된 상태에서 눌렀으면 바로 아티클 목록 페이지로 이동
+    return redirect("articles:articles")
 
 
 def data_throw(request):
