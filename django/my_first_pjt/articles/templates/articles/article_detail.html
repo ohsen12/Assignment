@@ -3,35 +3,50 @@
 {% block content %}
 
     <h1>아티클 상세 페이지</h1>
+
+    <p>작성자: {{ article.author.username }}</p>
+    <p>제목: {{ article.title }}</p>
+
     {% if article.image %}
 		<img src="{{ article.image.url }}" > {# 실제 이미지를 넣는게 아님!#}
     {% endif %}		
 
-    <p>제목: {{ article.title }}</p>
     <p>내용: {{ article.content }}</p>
     <p>작성일시: {{ article.created_at }}</p>
     <p>수정일시: {{ article.updated_at }}</p>
     <br>
+    
 
-    {#해당 아티클 삭제하기 위해 delete url로 보내기. DB 조작하는 거니까 포스트 방식을 사용한다.#}
-    <form action="{% url 'articles:delete' article.pk %}" method="POST">
-        {% csrf_token %}
-        <input type="submit" value="글 삭제"> 
-        {# delete url로 pk값을 포스트 방식으로 보내서, delete 뷰 함수로 이어지게 함 (해당 pk값의 레코드를 삭제) #}
-    </form> <br>
-
-    <a href="{% url 'articles:update' article.pk %}"><button>글 수정하러 가기</button></a><br><br>
+    {% comment %} 
+    현재 로그인한 사용자 정보를 템플릿에서 user 변수로 자동으로 사용할 수 있다!
+    보통 뷰에서 템플릿으로 '자동으로' 전달된다. 즉, 별도로 뷰에서 context에 user 변수를 추가하지 않아도 장고가 자동으로 user 변수를 템플릿에 전달해준다는 것이다.
+    {% endcomment %}
+    
+    {% if user == article.author %} {# 현재 로그인한 사용자 또는 요청을 보낸 사용자가 해당 게시글의 작성자와 같다면#}
+        <a href="{% url 'articles:update' article.pk %}">
+            <button>글 수정</button></a>
+        <br><br>
+        
+        <form action="{% url 'articles:delete' article.pk %}" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="글 삭제"> 
+            {# delete url로 pk값을 포스트 방식으로 보내서, delete 뷰 함수로 이어지게 함 (해당 pk값의 레코드를 삭제) #}
+        </form> <br>
+    {% endif %}
+    
     <a href="{% url 'articles:articles' %}">아티클 목록으로 가기</a><br><br>
     
     
     <hr>
     <h3>댓글 {{ comments|length }}개</h3>
     
-    <form action="{% url "articles:comment_create" article.pk %}" method="POST">
-        {% csrf_token %}
-        {{ comment_form.as_p }}
-        <input type="submit" value="댓글작성">
-    </form>
+    {% if request.user.is_authenticated %} {# 만약 현재 요청을 보낸 사용자가 로그인되어 있다면 댓글 작성 폼 노출#}
+        <form action="{% url "articles:comment_create" article.pk %}" method="POST">
+            {% csrf_token %}
+            {{ comment_form.as_p }}
+            <input type="submit" value="댓글작성">
+        </form>
+    {% endif %}
 
     {% comment %} 
     context에 담아서 들고온 해당 게시글의 댓글들 for문 돌려서 하나씩 다 보여주기
@@ -42,12 +57,16 @@
   
     {% for comment in comments %}
     <ul>
-        <li>{{ comment.content }}</li>
+        <li>{{ comment.user.username }} : {{ comment.content }}</li>
+        
+        {% if user == comment.user %}
         {# 댓글 삭제 버튼 #}
         <form action="{% url "articles:comment_delete" article.pk comment.pk%}" method="POST">
             {% csrf_token %}
             <input type="submit" value="삭제">
         </form>
+        {% endif %}
+
     </ul>
     {% endfor %}
 

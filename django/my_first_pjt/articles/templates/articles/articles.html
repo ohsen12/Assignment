@@ -13,7 +13,7 @@
     {% for article in articles %} {#여기서 articles는 뷰 함수에서 context로 받은 것#}
     
     <a href="{% url 'articles:article_detail' article.pk%}">
-    <p>[{{article.id}}]{{article.title}}</p>
+    <p>[{{article.id}}] {{article.title}} - {{article.author.username}}</p>
     </a> {#글제목 클릭하면 이동할 수 있게 앵커태그 안에 넣어주고 url이랑 해당 pk값 변수로 할당하기#}
     
     <hr>

@@ -89,6 +89,9 @@ DATABASES = {
     }
 }
 
+# 유저모델은 직접 accounts 앱에 등록해 놓은 유저 모델로 사용하겠음.
+AUTH_USER_MODEL = 'accounts.User'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

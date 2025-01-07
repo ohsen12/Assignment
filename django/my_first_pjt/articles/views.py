@@ -53,8 +53,10 @@ def create(request):
     if request.method == "POST": # 새글 작성하고 저장 누른 거임. 이제 데이터베이스에 전송받은 글 저장해야지.
         form = ArticleForm(request.POST, request.FILES) # form에 request.POST에 있는(전송받은) 데이터 채워
         if form.is_valid(): # form 형식에 맞으면
-            article = form.save() # DB에 저장하고
-            return redirect("articles:article_detail", article.id) # 저장된 해당 글 상세페이지로 넘어가기
+            article = form.save(commit=False)
+            article.author = request.user # 지금 로그인한 유저
+            article.save()
+            return redirect("articles:article_detail", article.pk) # 저장된 해당 글 상세페이지로 넘어가기
     else: # 새로운 아티클 작성하러 가기 앵커 태그(GET방식) 누르고 새 글 작성하러 온 거임
         form = ArticleForm() # 폼(입력양식) 만들어주고
         context = {"form": form} # 저장 버튼 눌러서 전송받으면 그거 활용해서 creat.html 랜더링 해서 보여줘
@@ -110,6 +112,8 @@ def comment_create(request, pk):
         comment = form.save(commit=False)
         # 새로 생성된 댓글 객체(comment)의 article 속성을 위에서 가져온 Article 객체로 설정한다. 이를 통해 댓글이 어느 게시글에 속하는지를 지정한다!
         comment.article = article
+        # 새로 생성된 댓글 객체의 user 속성을 요청을 넘긴 유저로 설정한다.
+        comment.user = request.user
         # 이제 댓글 객체를 데이터베이스에 저장한다.
         comment.save()
     return redirect("articles:article_detail", article.pk)

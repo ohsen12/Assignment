@@ -2,10 +2,15 @@
 # 이를 통해 Django 기본 폼 기능을 확장하거나 커스터마이징할 수 있다.
 
 
-from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = get_user_model()
+        fields = UserCreationForm.Meta.fields
 
 
 # UserChangeForm을 상속받아 커스텀 해주겠음. 커스텀 안하면 필요없는 부분까지 회원정보 수정에 뜸.
@@ -21,7 +26,7 @@ class CustomUserChangeForm(UserChangeForm):
             "last_name",
         )
 
-# 뭐 링크? 누르면 바로 패스워드 수정하는 화면으로 갈 수 있도록 이니셜 메소드 오버라이딩 (이건 나도 모르겠음ㅜ)
+    # 뭐 링크? 누르면 바로 패스워드 수정하는 화면으로 갈 수 있도록 이니셜 메소드 오버라이딩 (이건 나도 모르겠음ㅜ)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
