@@ -18,6 +18,7 @@ urlpatterns = [
     path("<int:pk>/", views.article_detail, name="article_detail"), # <>는 변수로 들어올 값. 따라서 뷰 함수에서 이를 받을 매개변수를 만들어놔야 한다.
     path("<int:pk>/delete/", views.delete, name="delete"),
     path("<int:pk>/update/", views.update, name="update"),
+    path("<int:pk>/comments/", views.comments_create, name="comments_create"), # 댓글 작성하는 뷰로 연결시켜주는 url
     
     path("index/", views.index, name='index'), 
     
