@@ -18,7 +18,13 @@ urlpatterns = [
     path("<int:pk>/", views.article_detail, name="article_detail"), # <>는 변수로 들어올 값. 따라서 뷰 함수에서 이를 받을 매개변수를 만들어놔야 한다.
     path("<int:pk>/delete/", views.delete, name="delete"),
     path("<int:pk>/update/", views.update, name="update"),
-    path("<int:pk>/comments/", views.comments_create, name="comments_create"), # 댓글 작성하는 뷰로 연결시켜주는 url
+    path("<int:pk>/comments/", views.comment_create, name="comment_create"), # 댓글 작성하는 뷰로 연결시켜주는 url
+    # 댓글 삭제 (해당 글의 pk, 해당 글의 댓글의 pk 둘 다 필요함. 일단 해당 글까지 들어왔으니까 그 뒤로 ~ 아오 복잡해)
+    path(
+        "<int:pk>/comments/<int:comment_pk>/delete/",
+        views.comment_delete,
+        name="comment_delete",
+    ),
     
     path("index/", views.index, name='index'), 
     
