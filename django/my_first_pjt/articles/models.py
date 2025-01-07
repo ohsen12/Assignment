@@ -19,3 +19,18 @@ class Article(models.Model):
     
     def __str__(self): # 클래스를 문자열 취급했을 때 어떻게 보여줄 지 결정하는 매직메서드
         return self.title
+    
+
+# 댓글을 작성하기 위한 모델(comment라는 데이터베이스의 테이블과 연결됨.)
+# 각 댓글이 어떤 게시글에 달려있는지 알아야 하기 때문에 외래키를 이용해 Article 모델(테이블)을 참조함. 
+class Comment(models.Model):
+    # 얘는 화면에 직접 표시되는 필드가 아니라, 데이터베이스에서 댓글(Comment)과 게시글(Article) 간의 관계를 정의하는 역할을 한다.
+    # 댓글 모델의 외래키 필드는 백엔드에서 데이터베이스의 관계를 설정하고, 어떤 댓글이 어떤 게시글에 속해 있는지를 나타낸다.
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="comments") # related_name은 아티클에서 댓글을 역참조 할 때 사용하는 매니저이다.
+    # 화면에 표시될 필드 정의
+    content = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.content
