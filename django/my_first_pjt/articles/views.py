@@ -1,7 +1,7 @@
 # 요청을 처리하고 처리한 결과를 반환하는 파일
 
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Article
+from .models import Article, Comment
 from .forms import ArticleForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods, require_POST
@@ -34,7 +34,7 @@ def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, �
     article = get_object_or_404(Article, pk=pk) # id가 넘겨받은 인자랑 같은 레코드 가져오기, 없으면 404에러 내주기
     # 댓글 작성 폼
     comment_form = CommentForm()
-    # 해당 아티클에 작성되어있는 댓글을 댓글 매니저 사용해서 댓글 다 들고와서 context에 담아줌
+    # 해당 아티클에 작성되어있는 댓글을 댓글 매니저 사용해서 댓글 다 들고와서 context에 담아줌 (그럼 얘는 길이가 있는 객체겠지. {{comment|length}} 이런 걸로 댓글 개수 알 수 있겠지 ~)
     comments = article.comments.all()
     context = {
       "article": article,
@@ -42,26 +42,6 @@ def article_detail(request, pk): # 뷰 함수의 첫번째 인자는 request, �
       "comments": comments,
     }
     return render(request, "articles/article_detail.html", context)
-
-
-# 사용자가 입력한 댓글 폼으로 댓글 테이블에 저장해주는 뷰(해당 게시글에 댓글을 추가하는 역할)
-@require_POST
-# request 객체와 pk라는 게시글의 기본 키(primary key)를 인자로 받는다.
-def comment_create(request, pk):
-    # 주어진 기본 키(pk)에 해당하는 Article 객체를 데이터베이스에서 가져온다.
-    article = get_object_or_404(Article, pk=pk)
-    # 요청으로 전달된 데이터를 이용해 CommentForm 인스턴스를 생성한다. 폼 데이터는 request.POST로 전달된다.
-    form = CommentForm(request.POST)
-    # 폼 데이터가 유효한지 검증
-    if form.is_valid():
-        # CommentForm의 데이터를 이용해 Comment 객체를 생성하되, 아직 데이터베이스에 저장하지 않는다. commit=False 옵션을 사용하여 인스턴스만 생성함
-        # comment.article과 같이 폼에는 포함되지 않은 데이터를 설정할 필요가 있다. 이렇게 해야 Comment가 특정 Article과 연결된다.
-        comment = form.save(commit=False)
-        # 새로 생성된 댓글 객체(comment)의 article 속성을 위에서 가져온 Article 객체로 설정한다. 이를 통해 댓글이 어느 게시글에 속하는지를 지정한다!
-        comment.article = article
-        # 이제 댓글 객체를 데이터베이스에 저장한다.
-        comment.save()
-    return redirect("articles:article_detail", article.pk)
     
     
 # ⭐️ 이 부분만 제대로 이해하면 돼🥹
@@ -113,6 +93,38 @@ def delete(request, pk):
         # 삭제하고 아티클 목록 페이지로 이동
     # 로그인 안된 상태에서 눌렀으면 바로 아티클 목록 페이지로 이동
     return redirect("articles:articles")
+
+
+# 사용자가 입력한 댓글 폼으로 댓글 테이블에 저장해주는 뷰(해당 게시글에 댓글을 추가하는 역할)
+@require_POST
+# request 객체와 pk라는 게시글의 기본 키(primary key)를 인자로 받는다.
+def comment_create(request, pk):
+    # 주어진 기본 키(pk)에 해당하는 Article 객체를 데이터베이스에서 가져온다.
+    article = get_object_or_404(Article, pk=pk)
+    # 요청으로 전달된 데이터를 이용해 CommentForm 인스턴스를 생성한다. 폼 데이터는 request.POST로 전달된다.
+    form = CommentForm(request.POST)
+    # 폼 데이터가 유효한지 검증
+    if form.is_valid():
+        # CommentForm의 데이터를 이용해 Comment 객체를 생성하되, 아직 데이터베이스에 저장하지 않는다. commit=False 옵션을 사용하여 인스턴스만 생성함
+        # comment.article과 같이 폼에는 포함되지 않은 데이터를 설정할 필요가 있다. 이렇게 해야 Comment가 특정 Article과 연결된다.
+        comment = form.save(commit=False)
+        # 새로 생성된 댓글 객체(comment)의 article 속성을 위에서 가져온 Article 객체로 설정한다. 이를 통해 댓글이 어느 게시글에 속하는지를 지정한다!
+        comment.article = article
+        # 이제 댓글 객체를 데이터베이스에 저장한다.
+        comment.save()
+    return redirect("articles:article_detail", article.pk)
+
+
+# 댓글 삭제
+@require_POST # url에 땅 치고 들어오면 안되니까 submit 버튼 눌렀을 때만 되는 POST 방식 사용해주자
+# request 객체와 두 개의 인자 pk (게시글의 기본 키)와 comment_pk (댓글의 기본 키)를 받는다.
+def comment_delete(request, pk, comment_pk):
+    # 데이터베이스에서 주어진 기본 키(comment_pk)에 해당하는 Comment 객체를 가져온다. (Comment 객체 : 데이터베이스에 저장된 하나의 댓글 데이터를 객체로 표현한 것)
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    # 가져온 댓글 객체를 데이터베이스에서 삭제
+    comment.delete()
+    # 해당 게시글로 다시 이동함
+    return redirect("articles:article_detail", pk)
 
 
 def data_throw(request):
