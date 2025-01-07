@@ -13,8 +13,7 @@ class ArticleForm(forms.ModelForm):
         model = Article 
         # fields 항목에 내가 form으로 만들고 싶은 항목들을 지정 (__all__은 모델의 모든 필드를 입력하게 하겠다.)
         fields = "__all__"
-        # exclude = ["굳이 입력 안 받아도 되는 컬럼"]
-        
+        exclude = ("author",)
 
 # 댓글(Comment) 폼 정의
 class CommentForm(forms.ModelForm):
@@ -23,8 +22,8 @@ class CommentForm(forms.ModelForm):
         model = Comment
         # 모델에서 보여줄 필드 정의
         fields = "__all__"
-        # 댓글 작성할 때 게시글은 사용자가 고르는 게 아니라 그냥 해당 아티클에 다는 거니까 아티클 필드는 보여주지 마
-        exclude = ("article",)
+        # 댓글 작성할 때 게시글은 사용자가 고르는 게 아니라 그냥 해당 아티클에 다는 거니까 아티클 필드는 보여주지 마. user도 같은 맥락에서 보여주지 마.
+        exclude = ("article","user")
 
     
     

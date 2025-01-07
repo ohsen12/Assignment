@@ -5,7 +5,7 @@ from django.contrib.auth import logout as auth_logout # 사용자정의 함수�
 from django.views.decorators.http import require_POST, require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm # 회원가입 폼
-from .forms import CustomUserChangeForm
+from .forms import CustomUserChangeForm, CustomUserCreationForm
 from django.contrib.auth import update_session_auth_hash
 
 
@@ -44,13 +44,13 @@ def logout(request):
 @require_http_methods(["GET","POST"])
 def signup(request):
     if request.method == "POST": # 사용자가 회원가입 정보입력하고 submit 버튼 누른 거면
-        form = UserCreationForm(request.POST) # 바인딩 폼 만들어주기
+        form = CustomUserCreationForm(request.POST) # 바인딩 폼 만들어주기
         if form.is_valid(): # 입력 데이터가 유효한 형식이라면
             user = form.save() # 해당 폼 데이터 DB에 저장해주고 + 얘는 save 하는 순간 자기가 세이브한 인스턴스를 돌려줌.
             auth_login(request, user) # 회원가입과 동시에 바로 로그인 시켜주기
             return redirect("articles:index")
     else:  # 그냥 회원가입하겠다고 바로 들어온 거면      
-        form = UserCreationForm() # 회원가입폼 만들어서 context에 담아 템플릿에 넘겨주기
+        form = CustomUserCreationForm() # 회원가입폼 만들어서 context에 담아 템플릿에 넘겨주기
     context = {"form":form}
     return render(request, "accounts/signup.html",context)
 
