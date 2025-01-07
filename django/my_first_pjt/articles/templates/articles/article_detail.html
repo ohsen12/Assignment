@@ -11,8 +11,29 @@
     <p>내용: {{ article.content }}</p>
     <p>작성일시: {{ article.created_at }}</p>
     <p>수정일시: {{ article.updated_at }}</p>
-
     <br>
+    
+    <hr>
+    <h3>댓글</h3>
+    <form action="{% url "articles:comment_create" article.pk %}" method="POST">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <input type="submit" value="댓글작성">
+    </form>
+
+    {% comment %} 
+    context에 담아서 들고온 해당 게시글의 댓글들 for문 돌려서 하나씩 다 보여주기
+    <ul> : unordered_list 순서 없는 목록. 목록의 시작과 끝을 정의하며, 목록의 각 항목은 <li> 태그로 감싸져야 함.
+    <li> : list item 목록 항목. 목록의 각 항목을 정의하며, <ul> 태그 안에 포함되어야 한다.
+    <p> : paragraph 단락. 텍스트를 단락으로 정의한다. 여기서는 댓글의 내용을 나타내기 위해 사용된다.
+    {% endcomment %}
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <p>{{ comment.content }}</p>  {# 장고의 템플릿 변수. 반복문 안에서 comment 객체의 content 속성을 출력 #}
+            </li>
+        {% endfor %}
+    </ul>
 
     <a href="{% url 'articles:articles' %}">아티클 목록으로 가기</a><br><br>
     
