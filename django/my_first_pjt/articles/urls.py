@@ -26,6 +26,9 @@ urlpatterns = [
         name="comment_delete",
     ),
     
+    # 좋아요 기능
+    path("<int:pk>/like/", views.like, name="like"),
+    
     path("index/", views.index, name='index'), 
     
     path("data-throw/", views.data_throw, name = "data-throw"),
