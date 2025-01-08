@@ -7,7 +7,7 @@
     <p>작성자: {{ article.author.username }}</p>
     <p>제목: {{ article.title }}</p>
 
-    {% if article.image %}
+    {% if article.image %} {# 이미지 속성이 존재하는 경우에. 참고로 이미지 없으면 이미지 컬럼에 빈문자열(불리언 False)로 표현됨 #}
 		<img src="{{ article.image.url }}" > {# 실제 이미지를 넣는게 아님!#}
     {% endif %}		
 
@@ -21,8 +21,8 @@
     현재 로그인한 사용자 정보를 템플릿에서 user 변수로 자동으로 사용할 수 있다!
     보통 뷰에서 템플릿으로 '자동으로' 전달된다. 즉, 별도로 뷰에서 context에 user 변수를 추가하지 않아도 장고가 자동으로 user 변수를 템플릿에 전달해준다는 것이다.
     {% endcomment %}
-    
-    {% if user == article.author %} {# 현재 로그인한 사용자 또는 요청을 보낸 사용자가 해당 게시글의 작성자와 같다면#}
+
+    {% if user == article.author %} {# 현재 요청을 보낸 사용자가 해당 게시글의 작성자와 같다면 수정, 삭제 버튼 노출#}
         <a href="{% url 'articles:update' article.pk %}">
             <button>글 수정</button></a>
         <br><br>
@@ -59,14 +59,14 @@
     <ul>
         <li>{{ comment.user.username }} : {{ comment.content }}</li>
         
-        {% if user == comment.user %}
-        {# 댓글 삭제 버튼 #}
-        <form action="{% url "articles:comment_delete" article.pk comment.pk%}" method="POST">
-            {% csrf_token %}
-            <input type="submit" value="삭제">
-        </form>
-        {% endif %}
+        {% if user == comment.user %} {# 현재 사용자가 해당 댓글의 작성자와 같다면 댓글 삭제 버튼 노출#}
+    
+            <form action="{% url "articles:comment_delete" article.pk comment.pk%}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="삭제">
+            </form>
 
+        {% endif %}
     </ul>
     {% endfor %}
 
