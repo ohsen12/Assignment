@@ -15,6 +15,13 @@ urlpatterns = [
     
     # 앞에서 users/랑 일치해서 뒷부분만 넘어왔음. 뒷부분이랑만 일치하는지 보면 됨.
     path("",views.users, name='users'),
+    
+    # 유저 프로필 페이지는 해당 유저 pk 넘겨주는 거 아니고 유저네임 넘겨주는 거임!!
     path("profile/<str:username>/",views.profile, name='profile'),
+    
+    # 프로필 유저의 pk를 담아 팔로우 뷰로 넘어간다
+    # <int:user_pk> 부분이 변수로 처리되며, URL 경로에서 정수 값을 받아 user_pk라는 이름으로 뷰 함수에 전달한다.
+    # 즉, member.pk가 저기로 가는 거!
+    path("<int:user_pk>/follow/", views.follow, name="follow"),
 
 ]
