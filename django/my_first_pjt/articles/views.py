@@ -1,5 +1,6 @@
 # 요청을 처리하고 처리한 결과를 반환하는 파일
 
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Article, Comment
 from .forms import ArticleForm, CommentForm
@@ -23,7 +24,7 @@ def index(request):
 def data_throw(request):
     return render(request,'articles/data_throw.html')
 
-
+@require_POST
 def data_catch(request):
     '''
     data-throw 에서 입력한 데이터를 message라는 name(key)으로 값을 전달해줬기 때문에
@@ -37,9 +38,17 @@ def data_catch(request):
     템플릿에서 contex 딕셔너리에 정의된 변수들을 사용하여 HTML 페이지를 만들 수 있다는 것이다. 
     근데 이때 context를 세 번째 인자로 전달하지 않으면 템플릿에서 변수를 사용할 수 없어서, HTML 출력에 동적 데이터가 포함되지 않게 되니 주의해야 한다!  
     '''
-    message = request.GET.get("message") # 서버로 데이터가 message라는 키값으로 전송되니까 딕셔너리의 get 메서드를 사용해서 해당 키의 값을 꺼내오는 것임
-    context = {"message": message}
-    return render(request,'articles/data_catch.html',context)
+    message = request.POST.get("message") # 서버로 데이터가 message라는 키값으로 전송되니까 딕셔너리의 get 메서드를 사용해서 해당 키의 값을 꺼내오는 것임
+    # 아무것도 입력하지 않았는데 제출버튼을 눌렀다면
+    if not(message):
+        # 오류 메시지 생성. 
+        # messages 모듈을 사용하면 장고의 메시지 프레임워크가 자동으로 메시지를 세션에 저장하고, 이를 장고가 자동으로 컨텍스트로 템플릿에 전달한다.
+        # 이제 템플릿에서 messages 컨텍스트 변수에 접근하여 저장된 메시지를 화면에 표시할 수 있다.
+        messages.error(request, '내용을 입력하세요.')
+        return redirect("articles:data-throw")
+    else:
+        context = {"message": message}
+        return render(request,'articles/data_catch.html',context)
 
 
 # 데이터베이스에서 Article 테이블을 전부 가져와서 화면에 보여주는 로직
