@@ -11,7 +11,7 @@ related_name으로 "followers"를 설정함으로써, 그 사용자를 팔로우
 {% endcomment %}
 
 {% block content %}
-    <h1>이곳은 {{ member.username}}의 프로필 페이지입니다.</h1>
+    <h1> 🌸 이곳은 {{ member.username}}의 프로필 페이지입니다.</h1>
 
     <div>
         <h2>username : {{ member.username }}</h2>
@@ -36,6 +36,15 @@ related_name으로 "followers"를 설정함으로써, 그 사용자를 팔로우
     </div>
     <br>
     
-    <a href="{% url 'users:users' %}">사용자 페이지로 돌아가기</a><br><br>
-    <a href="{% url 'articles:index' %}">홈(index)으로 돌아가기</a>
+    <a href="{% url 'users:users' %}">
+        <button type="button" class="btn btn-secondary" style="background-color: pink; border-color: pink; color: white">
+        사용자 페이지로 돌아가기</button>
+    </a>
+    
+    <br><br>
+    
+    <a href="{% url 'articles:index' %}">
+        <button type="button" class="btn btn-secondary" style="background-color: Lightblue; border-color: Lightblue; color: white;">
+        홈(index)으로 돌아가기</button>
+    </a>
 {% endblock content%}
