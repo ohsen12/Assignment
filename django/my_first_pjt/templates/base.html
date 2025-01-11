@@ -26,18 +26,29 @@
         {# 로그아웃은 데이터베이스 상태를 바꾸는 거니까 (세션) POST 방식으로 해준다 #}
         <form action="{% url 'accounts:logout' %}" method="POST">
             {% csrf_token %}
-            <input type="submit" value="로그아웃"></input>
+            <button type="submit" class="btn btn-outline-dark">
+                로그아웃
+            </button>
         </form>
         
         <a href="{% url 'accounts:update' %}">
-            <button type="button" class="btn btn-light">
+            <button type="button" class="btn btn-outline-dark">
                 회원정보 수정
             </button>
         </a>
 
         <form action="{% url "accounts:delete" %}" method="POST">
             {% csrf_token %}
-            <input type="submit" value="회원탈퇴">
+            <button type="submit" class="btn btn-outline-dark">
+                회원탈퇴
+            </button>
+        </form>
+
+        <form action="{% url "articles:index" %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-Lavender">
+                🏠
+            </button>
         </form>
 
         {% else %}

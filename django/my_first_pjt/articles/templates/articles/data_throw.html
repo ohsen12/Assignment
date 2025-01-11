@@ -5,6 +5,7 @@
 <h1> ⚾️ 이곳은 데이터를 전송하는 페이지입니다.</h1><br>
 <p>원하는 데이터를 입력해서 데이터 수신 페이지로 전송해보세요!</p>
 
+{# 사용자가 아무것도 입력하지 않고 제출해서 data-context 뷰에서 내용 입력하라는 messages 를 담아 보냈다면 #}
 {% if messages %}
     <ul>
         {% for message in messages %}
@@ -26,13 +27,16 @@ GET 방식은 데이터를 서버로 전송할 때 쿼리스트링(데이터를 
 쿼리스트링 : 데이터를 url 주소에 포함시켜 전송하는 방식. ? 뒤에 데이터가 위치하고, &로 연결된 key=value 형태로 구성됨
 
 {% endcomment %}
+
 <form action="{% url 'articles:data-catch' %}" method="POST">
     {% csrf_token %}
     <lable for "message">데이터 입력 : </label> {#입력필드의 이름#}
     <input type="text" id="message" name="message"> {#입력필드의 유형과 고유식별자 지정#}
-    <input type="submit" value="제출">
+    <button type="submit" class="btn btn-outline-white">
+        💌
+    </button>
 </form>
-<a href="{%url 'articles:index'%}">
+<a href="{% url 'articles:index' %}">
     <button type="button" class="btn btn-secondary" style="background-color: Lightblue; border-color: Lightblue; color: white;">홈(index)으로 가기</button>
 </a>
 

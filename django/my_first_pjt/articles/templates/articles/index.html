@@ -1,23 +1,36 @@
 {% extends "base.html" %}
 
-{% load static %} {#정적 파일을 참조하는 데 사용되는 static 태그를 사용하려면 먼저 이 태그를 추가해야 한다.#}
-{%block content%}
+{% load static %} {#❗️정적 파일을 참조하는 데 사용되는 static 태그를 사용하려면 먼저 이 태그를 추가해야 한다.#}
+{% block content %}
+    <br>
     <h1>안녕하세요! django로 만든 웹페이지입니다🥳</h1>
     <div>
         이것은 나의 첫 번째 장고 프로젝트입니다.
     </div>
     <br>
 
-    <img src="{% static "articles/friends.jpg" %}" alt="칭긔칭긔(이미지 로딩 실패시 대체 텍스트)">
+    <img src="{% static "articles/friends.jpg" %}" alt="😎칭긔칭긔😎(이미지 로딩 실패시 대체 텍스트)">
+    
     <br><br>
-    <a href="{% url 'articles:data-throw'%}">
-        <button type="button" class="btn btn-secondary" style="background-color: pink; border-color: pink; color: white;">데이터 전송 페이지로 이동</button>
-        </a><br><br>
-    <a href="{% url 'users:users'%}">
-        <button type="button" class="btn btn-secondary" style="background-color: Lavender; border-color: Lavender; color: white;">사용자 페이지로 이동</button>
-        </a><br><br>
-    <a href="{% url 'articles:articles' %}">
-        <button type="button" class="btn btn-secondary" style="background-color: Lightblue; border-color: Lightblue; color: white;">아티클 목록으로 이동</button>
-        </a><br>
 
-{%endblock content%}
+    <a href="{% url 'articles:data-throw'%}">
+        <button type="button" class="btn btn-secondary" style="background-color: pink; border-color: pink; color: white;">
+            데이터 전송 페이지로 이동
+        </button>
+    </a>
+    <br><br>
+
+    <a href="{% url 'users:users'%}">
+        <button type="button" class="btn btn-secondary" style="background-color: Lavender; border-color: Lavender; color: white;">
+            사용자 페이지로 이동
+        </button>
+    </a>
+    <br><br>
+
+    <a href="{% url 'articles:articles' %}">
+        <button type="button" class="btn btn-secondary" style="background-color: Lightblue; border-color: Lightblue; color: white;">
+            아티클 목록으로 이동
+        </button>
+    </a>
+
+{% endblock content %}

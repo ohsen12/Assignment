@@ -38,6 +38,7 @@ def data_catch(request):
     템플릿에서 contex 딕셔너리에 정의된 변수들을 사용하여 HTML 페이지를 만들 수 있다는 것이다. 
     근데 이때 context를 세 번째 인자로 전달하지 않으면 템플릿에서 변수를 사용할 수 없어서, HTML 출력에 동적 데이터가 포함되지 않게 되니 주의해야 한다!  
     '''
+    # 포스트 방식으로 넘어온 입력 데이터 꺼내오기
     message = request.POST.get("message") # 서버로 데이터가 message라는 키값으로 전송되니까 딕셔너리의 get 메서드를 사용해서 해당 키의 값을 꺼내오는 것임
     # 아무것도 입력하지 않았는데 제출버튼을 눌렀다면
     if not(message):
@@ -106,7 +107,7 @@ def create(request):
 def update(request, pk):
     # 1️⃣ 일단 해당 글 가져와서 객체에 넣어놔
     article = get_object_or_404(Article, pk=pk)
-    
+
     if request.method == "POST": # 글 수정하고 저장 누른 거임.
         form = ArticleForm(request.POST, instance=article) # 양식이 유효하면 데이터베이스에 다시 저장하고
         if form.is_valid():
@@ -178,14 +179,14 @@ def like(request, pk):
         article = get_object_or_404(Article, pk=pk)
         # 해당 게시글에 좋아요 누른 사람 중에 요청 보낸 회원의 pk가 존재한다면 (해당 사용자가 현재 좋아요를 이미 누른 상태라는 거니까. 이 사람은 좋아요 취소 버튼 누르고 온거임)
         if article.like_users.filter(pk=request.user.pk).exists():
-            print("22")
             # 해당 게시글 좋아요 누른 사람에서 해당 회원 없애기
+            # ❗️ 중계 테이블에서 두 인스턴스 간의 관계가 제거되는 것
             article.like_users.remove(request.user)
-        # 아직 해당 게시글에 좋아요를 누르지 않은 회원이라면(좋아요 버튼 눌렀다는 거니까)
         
+        # 아직 해당 게시글에 좋아요를 누르지 않은 회원이라면(좋아요 버튼 누르고 온 거니까)
         else:
-            print("11")
             # 해당 게시글 좋아요 누른 사람에 해당 회원 추가하기
+            # ❗️ 중계 테이블에 두 인스턴스 간의 관계가 추가되는 거임
             article.like_users.add(request.user)
         return redirect("articles:articles")
     # 현재 사용자가 로그인되어 있지 않는데 따봉 버튼을 눌렀다면 로그인 페이지로 보내기 (로그인해야 사용할 수 있는 기능이에요~)
