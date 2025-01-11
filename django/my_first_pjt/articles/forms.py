@@ -18,7 +18,7 @@ class ArticleForm(forms.ModelForm):
 # 댓글(Comment) 폼 정의
 class CommentForm(forms.ModelForm):
     class Meta:
-        # Comment 모델을 사용해서 form을 만들거임
+        # Comment 모델을 사용해서 form을 만들거임 ❗️코멘트 폼으로 save하면 코멘트 테이블(모델)에 저장된다는 거
         model = Comment
         # 모델에서 보여줄 필드 정의
         fields = "__all__"

@@ -9,6 +9,7 @@
 
     {% if article.image %} {# 이미지 속성이 존재하는 경우에. 참고로 이미지 없으면 이미지 컬럼에 빈문자열(불리언 False)로 표현됨 #}
 		<img src="{{ article.image.url }}" > {# 실제 이미지를 넣는게 아님!#}
+        <br><br>
     {% endif %}		
 
     <p>내용: {{ article.content }}</p>
@@ -24,19 +25,26 @@
 
     {% if user == article.author %} {# 현재 요청을 보낸 사용자가 해당 게시글의 작성자와 같다면 수정, 삭제 버튼 노출#}
         <a href="{% url 'articles:update' article.pk %}">
-            <button>글 수정</button></a>
+            {# <input type="submit" value="글 삭제"> 라고 작성해줘도 되는데 이러면 안예쁘게 생겨서 버튼으로 만들어줌 #}
+            <button type="button" class="btn btn-outline-dark">
+                글 수정
+            </button>
+        </a>
         <br><br>
         
         <form action="{% url 'articles:delete' article.pk %}" method="POST">
             {% csrf_token %}
-            <input type="submit" value="글 삭제"> 
+            <button type="submit" class="btn btn-outline-dark">
+                글 삭제
+            </button>
             {# delete url로 pk값을 포스트 방식으로 보내서, delete 뷰 함수로 이어지게 함 (해당 pk값의 레코드를 삭제) #}
         </form> <br>
     {% endif %}
     
     <a href="{% url 'articles:articles' %}">
         <button type="button" class="btn btn-secondary" style="background-color: LemonChiffon; border-color: LemonChiffon; color: gray">
-            아티클 목록으로 가기</button>
+            아티클 목록으로 가기
+        </button>
     </a>
     <br><br>
     
@@ -48,8 +56,11 @@
         <form action="{% url "articles:comment_create" article.pk %}" method="POST">
             {% csrf_token %}
             {{ comment_form.as_p }}
-            <input type="submit" value="댓글작성">
+            <button type="submit" class="btn btn-outline-dark">
+                댓글 작성
+            </button>
         </form>
+        <hr>
     {% endif %}
 
     {% comment %} 
@@ -67,11 +78,18 @@
     
             <form action="{% url "articles:comment_delete" article.pk comment.pk%}" method="POST">
                 {% csrf_token %}
-                <input type="submit" value="삭제">
+                <button type="submit" class="btn btn-outline-dark">
+                    삭제
+                </button>
             </form>
 
         {% endif %}
     </ul>
+
+    {% empty %}
+    
+    <p> 아직 댓글이 없습니다 🥹 </p>
+
     {% endfor %}
 
 {% endblock content %}

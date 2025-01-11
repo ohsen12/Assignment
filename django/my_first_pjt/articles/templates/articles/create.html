@@ -1,18 +1,26 @@
 {% extends "base.html" %}
 
 {%block content%}
+
 <h1>새로운 아티클 작성하기</h1>
 
                {#사용자가 압력한 데이터를 전송할 url#} {# 현재 DB에 변화를 주는 행위를 할 거기 때문에 POST 방식을 사용해야 한다(약속임.)#}
 <form action="{% url 'articles:create' %}" method="POST" enctype="multipart/form-data"> {# enctypedms는 HTML 폼의 데이터를 서버로 전송할 때 사용되는 인코딩 타입 중 하나로, 이 속성은 파일 업로드와 같은 이진 데이터를 처리하기 위해 사용된다.#}
-    {% csrf_token %} {# 포스트 방식 사용하면 반드시 토큰 탬플릿 태그를 넣어줘여 함#}
+    {% csrf_token %} {# 포스트 방식 사용하면 반드시 토큰 탬플릿 태그를 넣어줘야 함 #}
 
     {{form.as_p}} {# 뷰에서 넘겨준 장고 폼을 p태그에 감싸서 렌더링하겠음. #}
  
-    <button type="submit">저장 버튼(폼 데이터를 서버로 제출하기)</button>
+    <button type="submit" class="btn btn-outline-dark">
+        저장 버튼(폼 데이터를 서버로 제출하기)
+    </button>
 </form> <br><br>
 
-<a href="{% url 'articles:articles'%}">아티클 목록으로 가기</a>
+<a href="{% url 'articles:articles'%}">
+    <button type="button" class="btn btn-secondary" style="background-color: LemonChiffon; border-color: LemonChiffon; color: gray">
+        아티클 목록으로 가기
+    </button>
+</a>
+
 {% endblock content %}
 
 

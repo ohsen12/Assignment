@@ -7,7 +7,9 @@
 <form action="{% url "accounts:update" %}" method="POST">
     {% csrf_token %}
     {{form.as_p}}
-    <button type="submit">수정</button>
+    <button type="submit" class="btn btn-outline-dark">
+        수정
+    </button>
 </form>
 
 {% endblock content %}

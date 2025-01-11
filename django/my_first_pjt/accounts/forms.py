@@ -7,17 +7,24 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 
+# 뭐.. 상속 받은 애들은 장고가 지원하는 유저폼 기능이겠지 아마.
+# 장고는 회원가입폼(UserCreationForm), 회원정보수정폼(UserChangeForm), 로그인폼(AuthenticationForm), 비밀번호변경폼(PasswordChangeForm), 이런 거 다 제공한다. 로그인,아웃할 때 찾아서 인증하고 세션 처리하고 이런 거 자기가 알아서 다 하는 거지!
+
+# 유저(회원)로 만들어주는 폼
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
+        # 이 폼을 사용해서 save 할 때는 설정 경로에 있는 유저모델, 즉 현재 사용되고 있는 유저모델을 가져와서 사용하겠다(현재는 커스텀 유저모델을 말함.)
         model = get_user_model()
         fields = UserCreationForm.Meta.fields
 
 
+# 유저(회원) 회원정보 바꿔주는 폼
 # UserChangeForm을 상속받아 커스텀 해주겠음. 커스텀 안하면 필요없는 부분까지 회원정보 수정에 뜸.
 # 저기서 메타 클래스에 있는 현재는 __all__이라고 적혀있는 부분만 오버라이딩 해주면 된다.
 class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
+        # 이 폼을 사용해서 save 할 때는 설정 경로에 있는 유저모델, 즉 현재 사용되고 있는 유저모델을 가져와서 사용하겠다(현재는 커스텀 유저모델을 말함.)
         model = get_user_model()
         fields = (
             "username",
@@ -30,7 +37,7 @@ class CustomUserChangeForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # 만약 우리가 갖고 있는 필드 중에서 password가 있으면 새로운 패스워드 텍스트 만들어서 끼워넣을게
+        # 만약 우리가 갖고 있는 필드 중에서 password가 있으면 새로운 패스워드 텍스트 만들어서 끼워넣을게 (아직 먼소린지 모르겠음ㅜ)
         if self.fields.get("password"):
             password_help_text = (
                 "You can change the password " '<a href="{}">here</a>.'
