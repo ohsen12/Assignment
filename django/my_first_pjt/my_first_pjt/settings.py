@@ -63,8 +63,10 @@ ROOT_URLCONF = "my_first_pjt.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR/'templates'], # BASE_DIR까지 뒤져서 찾아줘라
-        "APP_DIRS": True, # 파일을 찾을 때 앱 안쪽 경로도 찾아보라는 옵션
+        # 장고가 템플릿을 참조하는 위치는 여기서 결정된다.
+        # DIRS에 Django가 추가적으로 템플릿을 참조할 위치를 추가할 수 있음. 
+        "DIRS": [BASE_DIR/'templates'], # 최상단인 베이스 디렉토리에 있는 템플릿에서도 찾아봐라.
+        "APP_DIRS": True, # 파일을 찾을 때 앱 안쪽 경로까지 찾아보라는 옵션
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -89,7 +91,7 @@ DATABASES = {
     }
 }
 
-# 유저모델은 직접 accounts 앱에 등록해 놓은 유저 모델로 사용하겠음.
+# 커스텀유저모델은 직접 accounts 앱에 등록해 놓은 유저 모델로 사용하겠음.
 AUTH_USER_MODEL = 'accounts.User'
 
 
