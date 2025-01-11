@@ -104,7 +104,7 @@ def create(request):
 @login_required # 로그인이 되어있지 않은 상태에서 접근하면 settings.LOGIN_URL 에 설정된 경로(기본은 로그인 페이지)로 이동시킴
 @require_http_methods(["GET", "POST"]) # 요청이 이 방식일 때만 처리
 def update(request, pk):
-    # 일단 해당 글 가져와서 객체에 넣어놔
+    # 1️⃣ 일단 해당 글 가져와서 객체에 넣어놔
     article = get_object_or_404(Article, pk=pk)
     
     if request.method == "POST": # 글 수정하고 저장 누른 거임.
