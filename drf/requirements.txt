@@ -1,6 +1,7 @@
 asgiref==3.8.1
 Django==4.2
 django-seed==0.3.1
+djangorestframework==3.15.2
 Faker==33.3.1
 psycopg2==2.9.10
 python-dateutil==2.9.0.post0
