@@ -33,6 +33,16 @@
                 <button type="submit">로그아웃</button>
             </form>
 
+            <a href="{% url "users:update" %}">
+                {% csrf_token %}
+                <button type="button">회원정보 수정</button>
+            </a>
+
+            <form action="{% url "users:delete" %}" method="POST">
+                {% csrf_token %}
+                <button type="submit">회원탈퇴</button>
+            </form>
+
             <a href="{% url "index" %}">
                 <button type="button">🏠</button>
             </a>

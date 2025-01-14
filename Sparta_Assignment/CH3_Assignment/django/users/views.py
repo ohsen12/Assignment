@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import get_user_model
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods, require_POST
 # 장고가 알아서 해주는 폼
@@ -60,6 +60,36 @@ def signup(request):
         form = CustomUserCreationForm()
     context = {"form":form}
     return render(request, "users/signup.html", context)
+
+
+# 회원탈퇴
+@require_POST
+def delete(request):
+    if request.user.is_authenticated:
+        # 데이터베이스에서 해당 유저 삭제 (이미 사용자는 로그인 되어있는 유저니까 그냥 delete 했을 때 바로 삭제 되는 건가..?)
+        request.user.delete()
+        # 삭제하고 바로 로그아웃(해당 유저 세션 지우기. 반드시 탈퇴하고, 세션 지우고 순서여야 함!)
+        auth_logout(request) 
+    return redirect("index")
+
+
+# 회원정보수정
+@login_required
+@require_http_methods(["GET", "POST"])
+def update(request):
+    # 수정한 정보 입력하고 submit 버튼 눌렀다면
+    if request.method == "POST":
+        form = CustomUserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            print('유효성 검사 성공')
+            user = form.save()
+            print('폼 저장 성공')
+            return redirect("users:user_profile", username=user.username)
+    # 수정하러 링크타고 들어왔다면
+    else:
+        form = CustomUserChangeForm(instance=request.user) # 커스텀 회원정보 수정폼 들고와서 템플릿에 넘겨주기
+    context = {"form":form}
+    return render(request, 'users/update.html',context)
     
 
 # ❗️ 현재는 username 변수 직접 url에 쳐줘야 들어갈 수 있음
