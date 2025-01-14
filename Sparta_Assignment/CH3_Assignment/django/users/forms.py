@@ -16,3 +16,4 @@ class CustomUserCreationForm(UserCreationForm):
         model = get_user_model()
         # 기존 필드에 커스텀 필드(profile_image, introduction)를 추가
         fields = ('username', 'password1', 'password2', 'profile_image', 'introduction')
+        
