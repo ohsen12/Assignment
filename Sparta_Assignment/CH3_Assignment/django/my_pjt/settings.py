@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%cu49o0&c9qt9mrhf5+0r3)nmi++l7_v-yw_-=p%tymg=5+gp5'
+SECRET_KEY = 'django-insecure-%1tr!x^tifdp#i^zl+&8)5t!r^93hw1l@zeh@!)qs@)%&en(7k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -84,8 +84,9 @@ DATABASES = {
     }
 }
 
-# 커스텀 유저모델 지정
-AUTH_UWER_MODEL = "users.CustomUser"
+
+# 커스텀 유저모델 정의
+AUTH_USER_MODEL = "users.CustomUser"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -116,15 +117,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
-
-# Media files (유저가 웹에서 업로드한 파일 경로 지정)
-
-# 미디어 처리를 위한 URL
-MEDIA_URL = "/media/"
-# 업로드한 파일이 저장되는 디렉토리 경로 지정 (업로드 파일은 DB에 저장되지 않으며, 실제 저장되는 것은 파일의 경로임!)
-MEDIA_ROOT = BASE_DIR / "media"
-
 
 
 # Static files (CSS, JavaScript, Images)
