@@ -2,9 +2,14 @@
 
 {% block content %}
 
-<br>
-<h1>
-    들어오면 보이는 홈페이지 🏠
-</h1>
+<h1>홈페이지 🏠</h1>
+
+{% if request.user.is_authenticated %}
+
+    <a href="{% url "users:user_profile" username=user.username %}">
+        <button type="button">사용자 페이지로 가기</button>
+    </a>
+
+{% endif %}
 
 {% endblock content %}

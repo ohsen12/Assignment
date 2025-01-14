@@ -24,7 +24,7 @@ from my_pjt import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     # 홈페이지
-    path("", views.index),
+    path("", views.index, name="index"),
     # 앱
     path("users/", include("users.urls")),
     path("posts/", include("posts.urls")),
