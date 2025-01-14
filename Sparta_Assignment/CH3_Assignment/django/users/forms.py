@@ -17,3 +17,18 @@ class CustomUserCreationForm(UserCreationForm):
         # 기존 필드에 커스텀 필드(profile_image, introduction)를 추가
         fields = ('username', 'password1', 'password2', 'profile_image', 'introduction')
         
+
+# 회원정보수정 폼
+class CustomUserChangeForm(UserChangeForm):
+
+    class Meta:
+        # 이 폼을 사용해서 save 할 때는 설정 경로에 있는 유저모델, 즉 현재 사용되고 있는 유저모델을 가져와서 사용하겠다(현재는 커스텀 유저모델을 말함.)
+        model = get_user_model()
+        fields = (
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "profile_image",
+            "introduction",
+        )
