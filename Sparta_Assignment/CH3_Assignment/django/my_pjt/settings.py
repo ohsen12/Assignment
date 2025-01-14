@@ -58,7 +58,7 @@ ROOT_URLCONF = 'my_pjt.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -87,6 +87,7 @@ DATABASES = {
 
 # 커스텀 유저모델 정의
 AUTH_USER_MODEL = "users.CustomUser"
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -122,7 +123,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+# css, JS, 이미지 같은 애플리케이션에 고정된 자원들, 즉 정적 파일을 사용하기 위한 설정
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+
+# Media files
+# 미디어를 처리를 위한 URL
+MEDIA_URL = "/media/"
+# 업로드한 파일이 저장되는 디렉토리 경로를 지정. 업로드 파일은 데이터베이스에 저장되지 않으며 실제 저장되는 것을 파일의 경로
+MEDIA_ROOT = BASE_DIR / "media"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
