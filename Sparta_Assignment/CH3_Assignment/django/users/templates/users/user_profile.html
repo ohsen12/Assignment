@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{# context로 member 객체가 넘어왔음 #}
+<h1> 🌸 이곳은 {{ member.username }}의 프로필 페이지입니다 🌸 </h1>
+
+<br>
+
+<div>
+    <h2>username : {{ member.username }}</h2>
+
+    {% if member.profile_image %}
+    
+        <h3>profile_image</h3>
+        <br>
+        <img src="{{ member.profile_image.url }}" >
+        <br>
+
+    {% endif %}
+    
+    {% if member.introduction %}
+        <br>
+        <h3>introduction : {{ member.introduction }} </h3>
+        
+    {% endif %}
+
+</div>
+
+
+{% endblock content %}
+
+

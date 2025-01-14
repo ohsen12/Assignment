@@ -16,13 +16,22 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from my_pjt import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # 홈페이지
+    path("", views.index),
+    # 앱
+    path("users/", include("users.urls")),
+    path("posts/", include("posts.urls")),
 ]
-# 개발모드일 때만 정적 파일들을 서빙하는 기능을 더한다.
+
+# 개발모드일 때만 미디어 파일을 서빙(제공)하게 한다.
+# Django에서는 미디어 파일(예: 사용자 업로드 파일)을 MEDIA_URL과 MEDIA_ROOT 설정을 통해 관리한다.
+# 이 코드가 하는 일은, 개발 환경에서 미디어 파일을 요청할 때 Django가 이를 직접 제공하도록 하는 것이다.
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
