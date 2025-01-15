@@ -20,10 +20,34 @@ def post_create(request):
             post.save()
             return redirect("posts:post_detail", post.pk)
     # 게시글 작성하려고 링크타고 들어왔으면
+    # 이 부분 템플릿 공유 (create 뷰는 템플릿으로 form 객체만 전달함)
     else:    
         form = PostForm()
         context = {"form":form}
-        return render(request, "posts/post_create.html", context)
+        return render(request, "posts/post_form.html", context)
+    
+
+# ⭐️ 게시글 수정
+@login_required
+@require_http_methods(["GET","POST"])
+def post_update(request,pk):
+    # 일단 해당 게시글 객체 조회하고
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        # 바인딩 폼 만들어 주고 인스턴스는 원래 객체라고 알려주기
+        form = PostForm(request.POST, instance=post)
+        post = form.save()
+        return redirect("posts:post_detail", pk=post.pk)
+    # 글 수정하려고 링크 타고 들어왔으면
+    # 이 부분 템플릿 공유 (update 뷰는 템플릿으로 form 객체와 post 객체 둘 다 전달함)
+    else:
+        form = PostForm(instance=post)
+        # ⭐️ 글을 수정하고 저장할 때는, 해당 게시글 객체(pk값 뭔지 알아야 되니까!)랑 작성 폼 둘 다 템플릿으로 넘겨줘야 한다.
+        context = {
+            "post":post,
+            "form":form,
+        }
+        return render(request,"posts/post_form.html", context)
 
 
 # 게시글 목록
@@ -44,28 +68,6 @@ def post_detail(request,pk):
     post = get_object_or_404(Post, pk=pk)
     context = {"post":post}
     return render(request, "posts/post_detail.html", context)
-
-
-# ⭐️ 게시글 수정
-@login_required
-@require_http_methods(["GET","POST"])
-def post_update(request,pk):
-    # 일단 해당 게시글 객체 조회하고
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == "POST":
-        # 바인딩 폼 만들어 주고 인스턴스는 원래 객체라고 알려주기
-        form = PostForm(request.POST, instance=post)
-        post = form.save()
-        return redirect("posts:post_detail", pk=post.pk)
-    # 글 수정하려고 링크 타고 들어왔으면
-    else:
-        form = PostForm(instance=post)
-        # ⭐️ 글을 수정하고 저장할 때는, 해당 게시글 객체(뭔지 알아야 되니까!)랑 작성 폼 둘 다 필요하다!
-        context = {
-            "post":post,
-            "form":form,
-        }
-        return render(request,"posts/post_update.html", context)
     
 
 # 게시글 삭제

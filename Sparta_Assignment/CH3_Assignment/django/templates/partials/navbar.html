@@ -1,0 +1,42 @@
+{# navbar : 상단에 위치하는 메뉴바 #}
+<nav class="navbar border-bottom border-body" data-bs-theme="pink" style="background-color: Lavender;">
+        
+    {% comment %} 
+    request.user 는 우리가 context에 담아 넘기지 않아도 템플릿으로 자동으로 넘어가는 context다.
+    탬플릿을 랜더링할 때, 현재 로그인한 사용자를 나타내는 auth.User 클래스의 인스턴스 또는 AnonymousUser 인스턴스를 보여준다.
+    {% endcomment %}
+    
+    {% if request.user.is_authenticated %} {# 현재 로그인 되어있는 유저라면 로그아웃 버튼만 띄워 #}
+        <h3>안녕하세요 {{ request.user.username }}님!</h3>
+        
+        <form action="{% url "users:logout" %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">로그아웃</button>
+        </form>
+
+        <a href="{% url "users:user_update" %}">
+            {% csrf_token %}
+            <button type="button">회원정보 수정</button>
+        </a>
+
+        <form action="{% url "users:user_delete" %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">회원탈퇴</button>
+        </form>
+
+        <a href="{% url "index" %}">
+            <button type="button">🏠</button>
+        </a>
+    
+    {% else %}
+        <a href="{% url "users:signup" %}">
+            <button type="button">회원가입</button>
+        </a>
+    
+        <a href="{% url "users:login" %}">
+            <button type="button">로그인</button>
+        </a>
+    
+    {% endif %}
+
+    </nav>

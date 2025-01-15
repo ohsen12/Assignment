@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% comment %} 
+context로 넘어온 post 객체가 비어있지 않다면, 
+글을 create 하겠다고 한 거니까 글 수정하는 템플릿 구현,
+
+context로 넘어온 post 객체가 비어있다면, 즉, post 객체가 None이라면, 
+글을 update 하겠다고 한 거니까 글 생성하는 템플릿 구현.
+
+post_create 뷰에서는 post 객체를 전달하지 않지만, 생성 폼을 처리하기 위한 form은 전달된다.
+post_update 뷰에서는 post 객체를 가져오고 이를 템플릿에 전달하여 수정 폼을 표시한다.
+
+따라서, post_create 뷰에서는 post 객체가 아예 전달되지 않기 때문에 템플릿에서 post 객체가 없으면 else 블록이 실행된다.
+이때 post가 없어도 템플릿은 오류를 발생시키지 않고 정상적으로 처리된다.
+즉, post_create 뷰에서 post 객체를 아예 전달하지 않아도, 템플릿에서 post 객체가 없을 경우 else 블록이 실행되므로 문제가 발생하지 않는다.
+
+post_create 뷰에서는 새 게시글을 작성하는 폼이므로, 기존 게시글 객체가 필요하지 않기 때문에 post 객체를 템플릿에 전달하지 않아도 되고,
+게시글 작성 폼 객체만 넘겨주면 된다. 
+{% endcomment %}
+
+{% if post %} {# 템플릿으로 전달된 post 객체가 있다 = 이미 게시글이 존재한다 = 즉, 게시글 수정하러 들어왔다 폼 입력해서 게시글 수정 뷰로 submit #}
+
+    <form action="{% url "posts:post_update" post.pk %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">
+            글 수정
+        </button>
+    </form>
+
+{% else %} {# 템플릿으로 전달된 post 객체가 없다 = 이전 게시글이 존재하지 않는다 = 즉, 새로운 게시글 작성하러 들어왔다 = 폼 입력해서 게시글 생성 뷰로 submit #}
+
+    <form action="{% url "posts:post_create" %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">
+            글 생성
+        </button>
+    </form>
+
+{% endif %}
+
+
+{% endblock content %}
+
