@@ -3,15 +3,24 @@
 {% block content %}
 
 <h1>📖 이곳은 게시글 페이지입니다.</h1>
-
-<h3>게시글 목록</h3>
 <br>
 
+<a href="{% url "posts:post_create" %}">
+    <button type="button">
+        게시글 작성하러가기
+    </button>
+</a>
+<br><br>
+<h3>게시글 목록</h3>
+<br>
 {% for post in posts  %}
 
-    <a href="{% url "posts:post_detail", post.pk %}"> 
-        📝 {{ post.author }} - {{ post.title }}
+    <a href="{% url "posts:post_detail" post.pk %}"> 
+        <button type="button">
+            📝 {{ post.author }} - {{ post.title }}
+        </button>
     </a>
+    <br>
 
 {% empty %}
 <p>아직 게시글이 없습니다 🥹</p>

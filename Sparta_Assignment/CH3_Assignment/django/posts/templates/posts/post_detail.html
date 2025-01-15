@@ -12,6 +12,30 @@
 <p>작성일시: {{ post.created_at }}</p>
 <p>수정일시: {{ post.updated_at }}</p>
 
+{% if request.user == post.author  %}
+
+    <form action="{% url "posts:post_delete" post.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">
+            게시글 삭제
+        </button>
+    </form>
+    <br>
+    <a href="{% url "posts:post_update" post.pk %}">
+        <button type="button">
+            게시글 수정하러 가기
+        </button>
+    </a>
+    <br><br>
+    <hr>
+
+{% endif %}
+
+<a href="{% url "posts:post_list"%}">
+    <button type="button">
+        게시글 목록으로 가기
+    </button>
+</a>
 
 {% endblock content %}
 

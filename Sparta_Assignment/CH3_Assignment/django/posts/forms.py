@@ -7,4 +7,5 @@ class PostForm(forms.ModelForm):
         model = Post
         # fields 항목에 내가 form으로 만들고 싶은 항목들을 지정 (__all__은 모델의 모든 필드를 입력하게 하겠다.)
         fields = "__all__"
-        exclude = ("author")
+        # , 찍어둬야 함. 아니면 에러남!
+        exclude = ("author",)

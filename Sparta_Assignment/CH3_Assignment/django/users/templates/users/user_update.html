@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>✏️ 회원정보 수정 페이지 </h1>
+
+{% comment %} 
+회원정보 수정할 때도 이미지 파일 업로드 할 수 있으니까 enctype="multipart/form-data" 추가한다. 
+{% endcomment %}
+<form action="{% url "users:user_update" %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">수정</button>
+</form>
+
+{% endblock content %}

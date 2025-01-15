@@ -50,7 +50,7 @@ def signup(request):
         if form.is_valid():
             # 해당 폼 데이터 DB에 저장해주고 + 얘는 save 하는 순간 자기가 세이브한 인스턴스(객체)를 돌려줌.
             user = form.save()
-            # 제대로된 객체가 맞는지 터미널에서 확인
+            # ✅ 제대로된 객체가 맞는지 터미널에서 확인
             print(type(user))
             auth_login(request, user) # 회원가입과 동시에 바로 로그인 시켜주기
             return redirect("users:user_profile", username=user.username )   
@@ -64,7 +64,7 @@ def signup(request):
 
 # 회원탈퇴
 @require_POST
-def delete(request):
+def user_delete(request):
     if request.user.is_authenticated:
         # 데이터베이스에서 해당 유저 삭제 (이미 사용자는 로그인 되어있는 유저니까 그냥 delete 했을 때 바로 삭제 되는 건가..?)
         request.user.delete()
@@ -76,21 +76,20 @@ def delete(request):
 # 회원정보수정
 @login_required
 @require_http_methods(["GET", "POST"])
-def update(request):
+def user_update(request):
     # 수정한 정보 입력하고 submit 버튼 눌렀다면
     if request.method == "POST":
         # instance=request.user는 제출된 폼 데이터를 기존 request.user 객체에 덮어쓰기 위함
-        form = CustomUserChangeForm(request.POST, instance=request.user)
+        # 역시나 회원정보 수정할 때 이미지도 받을 수 있으므로 request.FILES 추가
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            print('유효성 검사 성공')
             user = form.save()
-            print('폼 저장 성공')
             return redirect("users:user_profile", username=user.username)
     # 수정하러 링크타고 들어왔다면
     else:
         form = CustomUserChangeForm(instance=request.user) # 커스텀 회원정보 수정폼 들고와서 템플릿에 넘겨주기
     context = {"form":form}
-    return render(request, 'users/update.html',context)
+    return render(request, 'users/user_update.html',context)
     
 
 # ❗️ 현재는 username 변수 직접 url에 쳐줘야 들어갈 수 있음

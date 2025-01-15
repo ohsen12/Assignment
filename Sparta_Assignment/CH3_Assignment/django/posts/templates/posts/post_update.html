@@ -2,6 +2,13 @@
 
 {% block content %}
 
+<form action="{% url "posts:post_update" post.pk %}" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">
+        글 수정
+    </button>
+</form>
 
 
 {% endblock content %}
