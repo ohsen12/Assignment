@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>게시글 상세 페이지</h1>
+
+<p>작성자 : {{ post.author.username }}</p>
+<br>
+<p>제목 : {{ post.title }}</p>
+<p>내용 : {{ post.content }}</p>
+<br>
+<p>작성일시: {{ post.created_at }}</p>
+<p>수정일시: {{ post.updated_at }}</p>
+
+
+{% endblock content %}
+

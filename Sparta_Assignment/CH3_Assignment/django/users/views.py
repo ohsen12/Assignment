@@ -79,6 +79,7 @@ def delete(request):
 def update(request):
     # 수정한 정보 입력하고 submit 버튼 눌렀다면
     if request.method == "POST":
+        # instance=request.user는 제출된 폼 데이터를 기존 request.user 객체에 덮어쓰기 위함
         form = CustomUserChangeForm(request.POST, instance=request.user)
         if form.is_valid():
             print('유효성 검사 성공')

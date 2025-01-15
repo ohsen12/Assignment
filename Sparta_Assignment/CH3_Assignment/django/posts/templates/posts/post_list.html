@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>📖 이곳은 게시글 페이지입니다.</h1>
+
+<h3>게시글 목록</h3>
+<br>
+
+{% for post in posts  %}
+
+    <a href="{% url "posts:post_detail", post.pk %}"> 
+        📝 {{ post.author }} - {{ post.title }}
+    </a>
+
+{% empty %}
+<p>아직 게시글이 없습니다 🥹</p>
+
+{% endfor %}
+
+
+{% endblock content %}
+
