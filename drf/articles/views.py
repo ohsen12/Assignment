@@ -250,27 +250,33 @@ class ArticleListAPIView(APIView):
 class ArticleDetailAPIView(APIView):
 
 	# 💡 두 번 이상 반복되는 로직은 함수로 빼자
-    # 일단 해당 아티클 들고오고
+    # 일단 넘어온 pk 값에 해당하는 아티클 가져와
     def get_object(self, pk):
         return get_object_or_404(Article, pk=pk)
 
     # 상세글 보겠다고 GET으로 왔으면
     def get(self, request, pk):
-        # pk에 해당하는 아티클 객체 조회해서 가져와라 
+        # pk에 해당하는 아티클 객체 가져와라 
         article = self.get_object(pk)
-        # 가져온 객체 ArticleSerializer를 통해 직렬화해서 
+        # 가져온 객체를 ArticleSerializer를 통해 직렬화해서 
         serializer = ArticleSerializer(article)
-        # 응답으로 보내줌
+        # JSON 응답으로 반환함
         return Response(serializer.data)
 
     # 4️⃣ Update
-    # 해당 객체 수정하겠다고 PUT 메서드로 들어왔으면
+    # 해당 객체 수정하겠다고 PUT 메서드로 들어왔으면, ❗️ 요청 본문에는 수정하고자 하는 JSON 데이터가 포함된다.
     def put(self, request, pk):
+        # 수정대상이 되는 아티클 가져와서
         article = self.get_object(pk)
-        # 시리얼라이저에 기존 아티클 담아서 보여주고, 이거 수정해서 오는 데이터 직렬화해줘, 그리고 부분 필드만 수정하는 것도 가능하도록  partial=True 옵션을 줘
+        # 기존 객체(article)와 클라이언트가 보낸 데이터를 결합하여 ArticleSerializer(직렬화) 객체를 생성한다.
+        # 💡 기존의 article 객체를 유지하면서, 클라이언트가 보낸 데이터로 특정 필드만 변경(즉, 업데이트)한다는 것.
+        # 그리고 부분 필드만 수정하는 것도 가능하도록  partial=True 옵션을 준다.
         serializer = ArticleSerializer(article, data=request.data, partial=True)
+        # 입력한 데이터가 유효하면
         if serializer.is_valid(raise_exception=True):
+            # save()를 호출하면, 역직렬화된 데이터로 기존 객체가 업데이트되고 DB에 저장된다.
             serializer.save()
+            # 응답은 JSON으로 줘
             return Response(serializer.data)
 
     # 3️⃣ Delete
@@ -279,7 +285,7 @@ class ArticleDetailAPIView(APIView):
         article = self.get_object(pk)
         # 해당 객체 DB에서 삭제해줘
         article.delete()
-        # 응답 띄울 거 만들어놓기. ## drf에서 응답은 JSON이어야 하므로 응답으로 줄 data도 Json 형식으로 적는다.
+        # 응답 띄울 거 만들어놓기. drf에서 응답은 JSON이어야 하므로 응답으로 줄 data도 JSON 형식으로 적는다.
         data = {"pk": f"{pk} is deleted."}
         # 응답띄우고 상태코드는 ok를 뜻하는 200으로 ~
         return Response(data, status=status.HTTP_200_OK)
