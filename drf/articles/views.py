@@ -1,13 +1,13 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import Article
+from .models import Article, Comment
 from django.core import serializers
 
 # drf
 from rest_framework import status # 상태코드가 어떤 메세지를 담고 있는지 상수로 미리 정의되어있는 모듈
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import ArticleSerializer
+from .serializers import ArticleSerializer, CommentSerializer
 
 # CBV (class based view)
 # APIView - DRF CBV의 베이스 클래스
@@ -226,7 +226,7 @@ class ArticleListAPIView(APIView):
         return Response(serializer.data)
     
     # 2️⃣ Create
-    # 아티클 생성하겠다고 POST 요청으로 바디에 JSON 데이터 담아왔으면
+    # 아티클 생성하겠다고 💡 POST 요청으로 바디에 JSON 데이터 담아온 상황이면
     # 💡 지금 풀스택 장고 공부하던거 생각해서 응?? 지금 뭐 템플릿에서 폼에 정보입력하고 그런 거 하나도 안했는데? 하고 헷갈릴 수 있는데,
     # 이거는 지금 템플릿에서 뭐 작업하고 다시 뷰로 보내고 이런 활동이 아니라, 포스트맨을 사용해서 API(앱과 프로그래밍으로 소통하는 것) 를 만들고 있는 거다!
     # 그니까 그냥 어 아티클 뷰인데 겟요청이 들어왔다? 아, 아티클 조회해달라는 거구나~ 하고 응답 만들어주고, 아티클 뷰인데 포스트 요청이 들어왔다? 아, 아티클 작성해서 데이터 보낸거구나~
@@ -257,6 +257,8 @@ class ArticleDetailAPIView(APIView):
     # 상세글 보겠다고 GET으로 왔으면
     def get(self, request, pk):
         # pk에 해당하는 아티클 객체 가져와라 
+        # 현재 인스턴스(뷰 객체)는 당연히 클래스의 속성과 메서드를 사용할 수 있다.
+        # ❗️get_object는 전역함수가 아니라 클래스 내에 정의된 메서드이므로, 해당 인스턴스의 메서드를 호출한다는 뜻에서 self.get_object(pk)라고 작성해야 한다. 그냥 get_object(pk)라고 하면 전역함수를 가져와라는 게 돼서 에러남!
         article = self.get_object(pk)
         # 가져온 객체를 ArticleSerializer를 통해 직렬화해서 
         serializer = ArticleSerializer(article)
@@ -264,7 +266,7 @@ class ArticleDetailAPIView(APIView):
         return Response(serializer.data)
 
     # 4️⃣ Update
-    # 해당 객체 수정하겠다고 PUT 메서드로 들어왔으면, ❗️ 요청 본문에는 수정하고자 하는 JSON 데이터가 포함된다.
+    # 해당 객체 수정하겠다고 💡 PUT 메서드로 요청 본문에 JSON 데이터와 함께 왔으면
     def put(self, request, pk):
         # 수정대상이 되는 아티클 가져와서
         article = self.get_object(pk)
@@ -276,7 +278,7 @@ class ArticleDetailAPIView(APIView):
         if serializer.is_valid(raise_exception=True):
             # save()를 호출하면, 역직렬화된 데이터로 기존 객체가 업데이트되고 DB에 저장된다.
             serializer.save()
-            # 응답은 JSON으로 줘
+            # 수정한 데이터를 JSON 응답으로 줘
             return Response(serializer.data)
 
     # 3️⃣ Delete
@@ -285,7 +287,63 @@ class ArticleDetailAPIView(APIView):
         article = self.get_object(pk)
         # 해당 객체 DB에서 삭제해줘
         article.delete()
-        # 응답 띄울 거 만들어놓기. drf에서 응답은 JSON이어야 하므로 응답으로 줄 data도 JSON 형식으로 적는다.
+        # JSON 응답으로 만들 거 딕셔너리로 만들어놓기. 
+        # 💡 Python의 딕셔너리는 JSON 구조와 유사하여 딕셔너리를 JSON으로 변환하거나, JSON 데이터를 딕셔너리로 변환할 수 있다.
         data = {"pk": f"{pk} is deleted."}
-        # 응답띄우고 상태코드는 ok를 뜻하는 200으로 ~
+        # DRF에서 Response 객체에 딕셔너리를 전달하면, 내부적으로 자동으로 JSON 형식으로 변환하여 클라이언트에 반환한다.
+        # JSON 응답을 상태코드 200(ok)와 함께 반환한다.
         return Response(data, status=status.HTTP_200_OK)
+    
+    
+
+# CBV로 댓글 뷰를 만들어보자!
+
+# 댓글 작성(경로변수로 article_pk 도 넘겨받았음!)
+class CommentListAPIView(APIView):
+    
+    # 특정 게시글의 댓글을 조회하려고 GET요청으로 왔으면
+    def get(self, request, article_pk):
+        article = get_object_or_404(Article,pk=article_pk)
+        comments = article.comments.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+    
+    # 댓글 달려고 POST 요청으로 바디에 JSON 데이터 담아 왔으면
+    def post(self, request, article_pk):
+        # 일단 pk에 해당하는 아티클 객체 들고오고
+        article = get_object_or_404(Article, pk=article_pk)
+        # ❗️serializer 입장에서는 내가 넘겨받은 데이터에 article 정보가 없는데, (요청에서 클라이언트는 content 만 보냄.)
+        # Comment 모델은 article 필드(외래키)가 필수로 설정되어 있기 때문에 유효성 검사를 통과하지 못한다. (서버에서 article 값을 추가로 지정해야 함)
+        # 이럴 때는 read_only_fields 를 설정해서 특정 필드를 직렬화 로직에 포함하지 않고 반환 값 데이터에만 필드를 포함하도록 할 수 있다.
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            # 댓글 시리얼라이저 객체의 article 속성을 해당 아티클로 정해주고 댓글 테이블에 역직렬화해서 모델 인스턴스로 저장
+            # comment는 생성시에 article 모델의 객체 정보가 필요하다. 그리고 save() 는 인스턴스를 저장하는 과정에서 추가적인 데이터가 필요한 경우 받을 수 있다.
+            serializer.save(article=article)
+            # 상태코드와 함꼐 JSON 데이터를 응답으로 반환
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+
+# 댓글 상세(경로변수로 comment_pk 도 넘겨받았음!)
+# 아티클 작성이랑 로직 비슷혀 ~
+class CommentDetailAPIView(APIView):
+    # 해당 댓글 객체 가져오기
+    def get_object(self, comment_pk):
+        return get_object_or_404(Comment, pk=comment_pk)
+
+    # 댓글 삭제
+    def delete(self, request, comment_pk):
+        comment = self.get_object(comment_pk)
+        comment.delete()
+        data = {"pk": f"{comment_pk} is deleted."}
+        return Response(data, status=status.HTTP_200_OK)
+    
+    # 댓글 수정
+    def put(self, request, comment_pk):
+        comment = self.get_object(comment_pk)
+        # 기존 댓글 객체에 사용자 입력 데이터로 덮어씌우고 직렬화
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            # 역직렬화해서 DB에 저장
+            serializer.save()
+            return Response(serializer.data)

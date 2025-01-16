@@ -22,6 +22,11 @@ urlpatterns = [
     path("", views.ArticleListAPIView.as_view(), name="article_list"),
     path("<int:pk>/", views.ArticleDetailAPIView.as_view(), name="article_detail"),
     
-    
+    # 아티클에 게시글 달기 위한 url
+    path("<int:article_pk>/comments/", views.CommentListAPIView.as_view(), name="comment_list"),
+    # 어차피 댓글 pk은 고유하기 떄문에 경로 변수에 굳이 아티클 pk까지는 필요 없다.
+    path("comments/<int:comment_pk>/", views.CommentDetailAPIView.as_view(), name="comment_detail"),
+
+
 ]
 
