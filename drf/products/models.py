@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 
-class product(models.Model):
+class Product(models.Model):
     # ⭐️ 카테고리 필드의 선택지
     # 앞이 DB에 저장되는 거, 뒤가 유저에게 보여지는 거
     CATEGORY_CHOICES = (

@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django_seed",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
+    # shell_plus 여기 들어있음
+    "django_extensions",
     # 사용자 정의 앱
     "accounts",
     "articles",
@@ -115,6 +117,18 @@ SIMPLE_JWT = {
     # 즉, 테이블이 필요하니 이 설정 후 migrate 해줘야 한다.
     "BLACKLIST_AFTER_ROTATION": True,
     
+}
+
+# Redis를 캐싱으로 사용하기 위해서는 설정이 필요하다.
+# 이거 이제 저장하면 이제는 Redis를 사용해서 캐싱을 하게 된다. keys * 로 조회하면 뜬다는 뜻이다.
+CACHES = {  
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
 }
 
 
