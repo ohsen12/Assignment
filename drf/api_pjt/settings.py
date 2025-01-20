@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # 사용자 정의 앱
     "accounts",
     "articles",
+    "products",
 ]
 
 MIDDLEWARE = [
