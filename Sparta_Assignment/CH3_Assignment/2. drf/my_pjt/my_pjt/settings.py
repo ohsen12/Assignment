@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 사용자 정의 앱
+    "users",
+    "posts",
 ]
 
 MIDDLEWARE = [
@@ -80,6 +83,8 @@ DATABASES = {
     }
 }
 
+# 커스텀 유저 모델 설정
+AUTH_USER_MODEL = "users.CustomUser"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
