@@ -123,10 +123,18 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, Images : 정적 파일은 보통 HTML 페이지에서 CSS/JS 등을 포함할 때 사용)
+# 개발자가 제공하는 파일. 주로 탬플릿 작업에서 사용되기 때문에 백엔드인 drf 단에서는 거의 사용할 일이 없다.
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Media files (사용자가 업로드하는 파일 : ImageField, FileField 등)
+# 미디어 파일 URL (클라이언트가 접근하는 URL)
+MEDIA_URL = '/media/'
+
+# 미디어 파일의 실제 저장 경로 (서버 파일 시스템 경로)
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
