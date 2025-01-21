@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
+from . import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-s)c_km8a5(k9d3!l)fb&r^*83t22)$5+r)9cmh6*w5=9&2ew0_'
+SECRET_KEY = config.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,6 +93,30 @@ DATABASES = {
 
 # 커스텀 유저 모델 설정
 AUTH_USER_MODEL = "users.CustomUser"
+
+# JWT 구현을 위한
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
+# JWT 유효기간 설정 
+SIMPLE_JWT = {
+    # 요청할 때마다 인증을 위해 헤더에 포함해야 하는 토큰 (만료시간 현재 30분으로 잡음)
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    # 엑세스 토큰이 만료되었을 때, 새로 엑세스 토큰을 발급받기 위한 토큰 (만료시간 하루로 잡음)
+    # 만일 리프레시 토큰까지 만료되었다면 다시 인증(로그인)과정이 필요함
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    
+    # 로테이션 리프레시 토큰을 True로 하면 새로운 리프레시 토큰을 줄 때, 새로운 액세스 토큰이랑 같이 준다.
+    "ROTATE_REFRESH_TOKENS": True,
+    # 새로운 리프레시를 줬으면, 이전 리프레시는 이제 유효하지 않아야 하니 그것을 블랙리스트로 넣겠다는 설정.
+    # 즉 불랙리스트를 DB에 저장해줘야겠지 (이제 예전 리프레시는 다시 던져도 동작하지 않음!)
+    # 즉, 테이블이 필요하니 이 설정 후 migrate 해줘야 한다.
+    "BLACKLIST_AFTER_ROTATION": True,
+    
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
