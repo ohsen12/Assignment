@@ -37,6 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Third-party
+    "django_seed",
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    # shell_plus 여기 들어있음
+    "django_extensions",
     # 사용자 정의 앱
     "users",
     "posts",
