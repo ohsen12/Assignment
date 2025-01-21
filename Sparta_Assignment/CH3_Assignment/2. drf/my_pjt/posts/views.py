@@ -1,6 +1,7 @@
 from rest_framework import status
-# 요거는 drf 에서 함수형 뷰를 만들 때 꼭 달아줘야 하는 데코레이터
+# 요거는 drf 에서 함수형 뷰를 만들 때 꼭 달아줘야 하는 데코레이터(여기선 사용한하는데 그냥 참고하라고 ~)
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post
@@ -9,6 +10,7 @@ from django.shortcuts import get_object_or_404
 
 
 # 💡 APIView 클래스 : HTTP 요청(request)을 받아 적절한 메서드(GET, POST 등)로 연결(호출)
+# drf(백엔드)의 역할은 url로 HTTP 요청이 들어오면 해당 로직 수행해서 JSON 응답(response)을 주는 것!
 
 
 class PostAPIView(APIView):
@@ -23,6 +25,10 @@ class PostAPIView(APIView):
     }
     여기서 author 필드는 ForeignKey이기 때문에, 실제로 커스텀 유저 모델에 존재하는 사용자 id를 전달해야 한다.
     '''
+    # 이 뷰에 인증된(로그인한) 사용자만 접근 가능하도록 (요청을 통해 해당 뷰에 접근하기 전 사용자가 인증된 상태인지를 확인한다.)
+    # 사용자가 인증되지 않으면 403(Forbidden) 에러를 반환한다.
+    permission_classes = [IsAuthenticated] 
+
     # Read (게시글 목록 조회)
     def get(self, request):
         # Post 모델(게시글 테이블)에 있는 인스턴스 전부 가져오기
@@ -35,9 +41,14 @@ class PostAPIView(APIView):
     
     # Create (게시글 생성)
     def post(self, request):
+        # ⭐️ 게시글을 생성하는 POST 요청에서 author를 전달하지 않아도 서버 측에서 현재 로그인한 사용자를 author로 설정하도록 해야 한다.
+        # 이럼 이제 클라이언트가 author 값을 보내더라도 그건 무시되고 항상 request.user.id 값이 Post 인스턴스의 author 필드에 설정된다.
+        data = request.data
+        data['author'] = request.user.id  # 요청한 사용자를 게시글의 작성자로 설정해준 다음에 바인딩 폼 만들어서 author 속성 자동으로 채워주기
+
         # 전달된 입력데이터랑 바인딩된 시리얼라이저 객체 만들어주고 (⭐️ 퓨어장고에서 form이 하던 역할을 drf에서는 시리얼라이저가 대체한다! 유효성 검사 이런 거 다 해줌.)
         # drf에서는 request.data 를 사용하여 클라이언트가 요청에 보낸 데이터를 받을 수 있다.
-        serializer = PostSerializer(data=request.data)
+        serializer = PostSerializer(data=data)
         # 입력데이터의 유효성이 검증되면, (raise_exception=True : 만약 유효하지 않으면 drf가 알아서 상태코드 400(Bad request)와 함께 에러나는 이유를 내려준다.)
         if serializer.is_valid(raise_exception=True):
             # ⭐️ save 메서드는 JSON 상태 그대로 DB 에 저장하는 것이 아니라, '역직렬화' 과정을 거쳐 우리가 아는 기본적인 형태의 Post 모델의 인스턴스로 저장한다 ⭐️
@@ -47,6 +58,12 @@ class PostAPIView(APIView):
 
 
 class PostDetailAPIView(APIView):
+    '''
+    posts/<int:post_pk>/ 라는 url로 들어왔을 때 HTTP 메서드에 따라 그에 맞는 get, put, delete 메서드를 호출하여 로직을 처리한다.
+    '''
+    # 인증된(로그인한) 사용자만 접근 가능하도록
+    permission_classes = [IsAuthenticated] 
+    
     # 일단 넘어온 pk 값에 해당하는 게시글 가져와
     def get_object(self, post_pk):
         return get_object_or_404(Post, pk=post_pk)
@@ -64,11 +81,11 @@ class PostDetailAPIView(APIView):
     def put(self, request, post_pk):
         post = self.get_object(post_pk)
         # 클라이언트가 어떻게 수정하겠다고 JSON 데이터를 put 요청으로 넘겨줬음
-        # 기존 객체(post)와 클라이언트가 수정용으로 보낸 데이터를 결합하여 다시 바인딩? 시리얼라이저 객체를 생성 
+        # ⭐️ 기존 객체(post)와 클라이언트가 수정용으로 보낸 데이터를 결합하여 다시 바인딩? 시리얼라이저 객체를 생성 
         serializer = PostSerializer(post, data=request.data, partial=True)
         # 입력한 데이터가 유효할 때
         if serializer.is_valid(raise_exception=True):
-            # 이제 save()를 호출하면, 역직렬화된 데이터로 기존 인스턴스가 DB에 업데이트된다.
+            # 이제 save()를 호출하면, 역직렬화된 데이터로 DB의 기존 인스턴스가 업데이트된다.
             serializer.save()
             # 업데이트된 데이터를 JSON 응답으로 줘
             return Response(serializer.data)

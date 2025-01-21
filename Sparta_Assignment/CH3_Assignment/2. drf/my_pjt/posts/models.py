@@ -5,6 +5,7 @@ from django.conf import settings
 class Post(models.Model):
     # ⭐️ 게시글을 누가 작성한 것인지 연결해주기 위해 외래키 사용
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts")
+    
     # 제목
     title = models.CharField(max_length=50)
     # 내용
