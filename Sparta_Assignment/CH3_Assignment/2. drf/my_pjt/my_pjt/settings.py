@@ -94,7 +94,7 @@ DATABASES = {
 # 커스텀 유저 모델 설정
 AUTH_USER_MODEL = "users.CustomUser"
 
-# JWT 구현을 위한
+# JWT 설정
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
