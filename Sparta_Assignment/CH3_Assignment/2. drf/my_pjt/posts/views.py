@@ -41,9 +41,6 @@ class PostAPIView(APIView):
     
     # Create (게시글 생성)
     def post(self, request):
-        # 💊 디버깅 코드
-        print(f"\n\n{request.user}\n\n")
-        
         # 전달된 입력데이터랑 바인딩된 시리얼라이저 객체 만들어주고 (⭐️ 퓨어장고에서 form이 하던 역할을 drf에서는 시리얼라이저가 대체한다! 유효성 검사 이런 거 다 해줌.)
         # drf에서는 request.data 를 사용하여 클라이언트가 요청에 보낸 데이터를 받을 수 있다.
         # request.user를 시리얼라이저에서 사용할 수 있도록 context에 담아 전달
@@ -51,8 +48,6 @@ class PostAPIView(APIView):
         
         # 입력데이터의 유효성이 검증되면, (raise_exception=True : 만약 유효하지 않으면 drf가 알아서 상태코드 400(Bad request)와 함께 에러나는 이유를 내려준다.)
         if serializer.is_valid(raise_exception=True):
-            # 💊 디버깅 코드
-            print(f"\n\nValidated Data: {serializer.validated_data}\n\n") 
             # ⭐️ save 메서드는 JSON 상태 그대로 DB 에 저장하는 것이 아니라, '역직렬화' 과정을 거쳐 우리가 아는 기본적인 형태의 Post 모델의 인스턴스로 저장한다 ⭐️
             # 지금 시리얼라이저에서 create 메서드를 오버라이드 했으니 save 메서드를 호출할 때 그리로 넘어간다.
             serializer.save()

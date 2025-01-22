@@ -35,5 +35,7 @@ urlpatterns = [
     # 회원탈퇴 (Delete)
     path("user_delete/", views.UserDeleteView.as_view(), name="user_delete"),
     
+    # 회원조회 (Read)
+    path("user_list/", views.UserListView.as_view(), name="user_list"),
     
 ]

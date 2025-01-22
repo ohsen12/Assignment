@@ -21,8 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         # 현재 프로젝트에서 정의된 User 모델 사용
         model = get_user_model()
         # 모델 중에서 어떤 필드를 직렬화할 건데?
-        # 모든 필드를. (프로필 이미지를 포함한 모든 필드가 직렬화된다.)
-        fields = "__all__"
+        fields = ['id','username','first_name','last_name','email','date_joined','introduction']
         
         # 이미지 필드를 이미지 url 로 직렬화 처리하기 위한 방법
         # 기본 to_representation 메서드는 모델 인스턴스를 직렬화하여 Python 딕셔너리 형태로 반환

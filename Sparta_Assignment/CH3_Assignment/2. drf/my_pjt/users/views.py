@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserSerializer, UserCreationSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
 
 
 # 회원가입
@@ -107,3 +108,18 @@ class UserDeleteView(APIView):
         request.user.delete()
         # 성공 메세지 반환
         return Response({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    
+    
+# 회원조회
+class UserListView(APIView):
+    # 현재 로그인한 사용자만 사용자 조회할 수 있음(일단 그렇게 하자)
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        # 커스텀 유저 모델의 인스턴스 다 들고와서
+        users = get_user_model().objects.all()
+        # 직렬화 해주고 
+        serializer = UserSerializer(users, many=True)
+        # 응답으로 반환
+        return Response(serializer.data)
+            
