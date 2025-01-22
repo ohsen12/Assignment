@@ -112,6 +112,11 @@ class UserDeleteView(APIView):
     
 # 회원조회
 class UserListView(APIView):
+    '''
+    만약 조회할 유저 목록이 없으면, get_user_model().objects.all()은 빈 쿼리셋을 반환한다. 
+    DRF는 빈 쿼리셋을 직렬화할 때도 정상적으로 동작하며, 결과적으로 [](빈 리스트) 형태의 JSON 응답을 반환하게 된다.
+    그래서 그거 생각하고 따로 로직 안 짜줘도 됨!
+    '''
     # 현재 로그인한 사용자만 사용자 조회할 수 있음(일단 그렇게 하자)
     permission_classes = [IsAuthenticated]
     
