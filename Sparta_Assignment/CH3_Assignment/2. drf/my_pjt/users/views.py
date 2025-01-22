@@ -7,7 +7,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 
 
-
 # 회원가입
 class UserSignupView(APIView):
     # 회원가입 로직이니까 이 뷰에 누구나 접근 가능하도록
@@ -31,26 +30,4 @@ class UserSignupView(APIView):
             return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
         
 
-# 로그인
-class UserLoginView(APIView):
-    # 로그인하려는 로직이니까 이 뷰에 누구나 접근 가능하도록
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        # 로그인이니까 클라이언트가 사용자의 username 과 password 를 POST 요청에 담아 보내줬을 것. (회원가입 폼 기억나지?)
-        # 그거 꺼내와서 변수에 할당
-        username = request.data.get('username')
-        password = request.data.get('password')
-
-        # 사용자 인증
-        user = authenticate(username=username, password=password)
-        
-        if user:
-            # 토큰 생성
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-            }, status=status.HTTP_200_OK)
-        
-        return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+# 인증(로그인)과 엑세스, 리프레시 토큰 발급은 url 에서 TokenObtainPairView 와 TokenRefreshView 클래스 뷰에서 해결한다.
