@@ -5,7 +5,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-# JWT 는 뷰가 필요 없더라..? 그냥 장고 내부 뷰를 여기서 사용하면 바로 처리해주는 듯..?
+
 urlpatterns = [
     # JWT를 사용한 로그인(인증) 요청을 보낼 url. JSON 데이터로 로그인 정보를 담아 send하면 해당 사용자의 엑세스와 리프레시 토큰을 응답으로 준다.
     path("signin/", TokenObtainPairView.as_view(), name="token_obtain_pair"),

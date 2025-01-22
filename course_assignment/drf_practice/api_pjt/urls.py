@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # 
     path('api/v1/articles/', include('articles.urls')),
+    # jwt는 settings.py 에 필요한 설정만 해주고 url 로만 구현하더라..? 그냥 url 에서 장고 내부 클래스 뷰를 사용해서 처리하는 듯.
     path('api/v1/accounts/', include('accounts.urls')),
     path('api/v1/products/', include('products.urls')),
     path("api/v1/chatgpt/", include("chatgpt.urls")),
