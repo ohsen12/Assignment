@@ -11,6 +11,7 @@ app_name = "users"
 
 urlpatterns = [
     
+    # 회원가입
     # as_view() 메서드를 통해 뷰 클래스 안의 http 요청에 따른 메서드가 실제 요청을 처리하는 뷰 함수로 변환되어 URL 패턴과 연결된다.
     path("signup/", views.UserSignupView.as_view(), name="signup"),
     
@@ -23,7 +24,13 @@ urlpatterns = [
     
     # JWT 를 사용한 로그아웃 로직
     # 클라이언트는 로그아웃을 요청할 때 리프레시 토큰을 POST 방식으로 서버에 보낸다
-    path("logout/", views.UserLogoutView.as_view(), name="logout")
+    path("logout/", views.UserLogoutView.as_view(), name="logout"),
+    
+    # 회원정보 수정
+    path("user_update/", views.UserUpdateView.as_view(), name="user_update"),
+    
+    # 회원탈퇴
+    path("user_delete/", views.UserDeleteView.as_view(), name="user_delete"),
     
     
 ]

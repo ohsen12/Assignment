@@ -29,7 +29,7 @@ class UserSignupView(APIView):
             return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
         
 
-# 인증(로그인)과 엑세스, 리프레시 토큰 발급은 url 에서 TokenObtainPairView 와 TokenRefreshView 클래스 뷰에서 해결한다.
+# 💡 인증(로그인)과 함께 진행되어야 할 엑세스, 리프레시 토큰 발급은 url 에서 TokenObtainPairView 와 TokenRefreshView 클래스 뷰와 연결하여 해결한다.
 
 # 로그아웃
 class UserLogoutView(APIView):
@@ -46,7 +46,7 @@ class UserLogoutView(APIView):
     이 문제는 클라이언트에서 액세스 토큰을 삭제하거나 액세스 토큰의 유효 기간을 짧게 설정하는 방식으로 처리할 수 있다.
     (백엔드에서 로그아웃을 처리하는 것과 별개로, 클라이언트가 리프레시 토큰을 서버로 보내고 나면, 클라이언트 측에서는 해당 액세스 토큰을 삭제하거나 만료된 토큰을 새로 고침하여 사용할 수 있도록 해야 한다.
     그러니까, 클라이언트 측에서 액세스 토큰을 삭제하는 작업은 백엔드에서 할 일이 아니며, 클라이언트 애플리케이션에서 처리해야 한다.
-    백엔드에서는 리프레시 토큰을 블랙리스트에 추가해 사용 불가능하게 만드는 방식으로 로그아웃 처리를 하며, 액세스 토큰의 만료나 삭제는 클라이언트에서 담당하는 부분이다.)
+    ❗️ 백엔드에서는 리프레시 토큰을 블랙리스트에 추가해 사용 불가능하게 만드는 방식으로 로그아웃 처리를 하며, 액세스 토큰의 만료나 삭제는 클라이언트에서 담당하는 부분이다.)
     '''
     
     # 로그아웃을 요청하는 사용자가 인증된 사용자여야만 접근할 수 있다는 것을 의미한다. 
@@ -76,3 +76,34 @@ class UserLogoutView(APIView):
         # 발생한 예외 객체를 변수 e 에 담아 사용한다.
         except Exception as e:
             return Response({"detail": str(e)}, status=400)
+        
+
+# 회원정보 수정
+class UserUpdateView(APIView):
+    # 현재 로그인한 사용자만 회원정보 수정 가능함(당연)
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        # ⭐️ 기존 객체(request.user)와 클라이언트가 수정용으로 보낸 데이터(request.data)를 결합하여 다시 바인딩? 시리얼라이저 객체를 생성 
+        # 일부 데이터만 업데이트하는 것도 가능하게 함
+        serializer = UserSerializer(request.user, data=request.data, partial=True)
+
+        # 바인딩 시리얼라이저 유효성 검사하고 
+        if serializer.is_valid(raise_exception=True):
+            # 유효하면 저장
+            serializer.save()  
+            return Response({"message": "User updated successfully"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 회원탈퇴
+class UserDeleteView(APIView):
+    # 현재 로그인한 사용자만 회원탈퇴 가능함(당연)
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request):
+        # 로그인한 사용자를 DB에서 삭제한다.
+        request.user.delete()
+        # 성공 메세지 반환
+        return Response({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
