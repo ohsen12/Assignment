@@ -169,6 +169,7 @@ class CommentAPIView(APIView):
         
         serializer = CommentSerializer(comment, data=request.data, partial=True, context={'request': request})
         if serializer.is_valid(raise_exception=True):
+            # author와 post는 시리얼라이저에서 자동 처리되므로 굳이 재설정할 필요 없음
             serializer.save()
             return Response(serializer.data)
     
