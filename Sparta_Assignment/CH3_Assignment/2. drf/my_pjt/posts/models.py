@@ -22,7 +22,9 @@ class Comment(models.Model):
     # ⭐️ 댓글을 누가 작성한 것인지 연결해주기 위해 유저 모델을 참조하는 외래키 사용
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comments")
     
+    # 댓글 내용
     content = models.CharField(max_length=255)
-    
+    # 생성일
     created_at = models.DateTimeField(auto_now_add=True)
+    # 수정일
     updated_at = models.DateTimeField(auto_now=True)

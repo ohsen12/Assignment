@@ -4,9 +4,10 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Post
-from .serializers import PostSerializer
+from .models import Post, Comment
+from .serializers import PostSerializer, CommentSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
 
 # 💡 APIView 클래스 : HTTP 요청(request)을 받아 적절한 메서드(GET, POST 등)로 연결(호출)
@@ -104,3 +105,78 @@ class PostDetailAPIView(APIView):
         # JSON 응답을 상태코드 200(ok)와 함께 반환한다.
         return Response(data, status=status.HTTP_200_OK)
     
+    
+# 댓글
+class CommentAPIView(APIView):
+    """
+    posts/<int:post_pk>/comments/ 로 들어오거나
+    posts/<int:post_pk>/comments/<int:comment_pk>/ 로 들어올 예정
+    뷰에 해당 변수를 받을 매개변수 자리를 만들어놔야겠지!
+    
+    특정 게시글의 댓글 목록 조회 및 댓글 생성 (GET, POST)
+    특정 댓글 조회, 수정, 삭제 (GET, PUT, DELETE)
+    """
+    
+    # 코드 중복 방지
+    def get_post(self, post_pk):
+        # post_pk에 해당하는 게시글 가져오기
+        return get_object_or_404(Post, pk=post_pk)
+
+    def get_comment(self, post, comment_pk):
+        # post에 속한 특정 comment 가져오기
+        return get_object_or_404(Comment, post=post, pk=comment_pk)
+
+
+    # Read
+    # 특정 댓글의 아이디 comment_pk 값은 전달 안 왔으면 디폴트값 None으로 지정
+    def get(self, request, post_pk, comment_pk=None):
+        # 일단 해당 게시글(post_pk)의 모든 댓글 가져오기
+        post = self.get_post(post_pk)
+        
+        # 댓글의 pk 값이 넘어왔으면 posts/<int:post_pk>/comments/<int:comment_pk>/ 로 들어왔다는 거니까
+        # 특정 게시글의 특정 댓글 조회
+        if comment_pk:
+            comment = self.get_comment(post, comment_pk)
+            serializer = CommentSerializer(comment)
+            return Response(serializer.data)
+        
+        # 댓글의 pk 값이 안 넘어왔으면 그냥 posts/<int:post_pk>/comments/ 로 들어왔다는 거니까
+        # 특정 게시글의 전체 댓글 조회
+        else :
+            comments = post.comments.all()
+            serializer = CommentSerializer(comments, many=True)
+            return Response(serializer.data)
+
+    
+    # Create
+    # 특정 게시글에 댓글 생성
+    def post(self, request, post_pk):
+        post = self.get_post(post_pk)
+        # 시리얼라이저에서 작성자 자동으로 설정해주기 위해 request 객체 넘겨줌 (시리얼라이저에서 request.user를 통해 로그인한 사용자를 자동으로 댓글의 author 필드에 설정)
+        serializer = CommentSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            # 댓글의 작성자(author)는 시리얼라이저에서 request.user를 통해 자동으로 설정됐기 때문에
+            # save 할 때는 게시글만 지정해주면 됨.
+            serializer.save(post=post)  # 게시글(post) 정보를 설정
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+    # Upadate
+    # 특정 게시글의 특정 댓글 수정
+    def put(self, request, post_pk, comment_pk):
+        post = self.get_post(post_pk)
+        comment = self.get_comment(post, comment_pk)
+        
+        serializer = CommentSerializer(comment, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+    
+    
+    # Delete
+    # 특정 게시글의 특정 댓글 삭제
+    def delete(self, request, post_pk, comment_pk):
+        post = self.get_post(post_pk)
+        comment = self.get_comment(post, comment_pk)
+        comment.delete()
+        return Response({"message": f"Comment {comment_pk} deleted."}, status=status.HTTP_204_NO_CONTENT)
