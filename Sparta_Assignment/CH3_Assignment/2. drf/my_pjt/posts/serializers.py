@@ -43,5 +43,14 @@ class PostSerializer(serializers.ModelSerializer):
         # 게시글 모델을 시리얼라이즈(직렬화)하겠다.
         model = Post
         # 모델 중에서 어떤 필드를 직렬화할 건데?
-        # 모든 필드를.
         fields = "__all__"
+    
+    # ⭐️ 클라이언트에서 author 필드를 보내지 않아도 로그인한 사용자가 자동으로 작성자로 설정되기 위한 오버라이딩
+    # 뷰에서 처리하는 방법도 있는데, 그냥 한번에 시리얼라이저에서 해결하는 것이 더 좋은 코드라고 한다.
+    def create(self, validated_data):
+        # 글을 생성할 때 request.user를 자동으로 author로 설정
+        user = self.context['request'].user
+        # author는 로그인한 사용자로 설정
+        validated_data['author'] = user  
+        # 부모 클래스인 ModelSerializer의 create 메서드를 호출하여, validated_data를 직접 Post 모델 인스턴스로 변환하고, 이를 DB에 저장
+        return super().create(validated_data)

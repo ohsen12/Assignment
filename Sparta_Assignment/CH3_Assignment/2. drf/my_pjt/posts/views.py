@@ -41,18 +41,23 @@ class PostAPIView(APIView):
     
     # Create (게시글 생성)
     def post(self, request):
-        # ⭐️ 게시글을 생성하는 POST 요청에서 author를 전달하지 않아도 서버 측에서 현재 로그인한 사용자를 author로 설정하도록 해야 한다.
-        # 이럼 이제 클라이언트가 author 값을 보내더라도 그건 무시되고 항상 request.user.id 값이 Post 인스턴스의 author 필드에 설정된다.
-        data = request.data
-        data['author'] = request.user.id  # 요청한 사용자를 게시글의 작성자로 설정해준 다음에 바인딩 폼 만들어서 author 속성 자동으로 채워주기
-
+        # 💊 디버깅 코드
+        print(f"\n\n{request.user}\n\n")
+        
         # 전달된 입력데이터랑 바인딩된 시리얼라이저 객체 만들어주고 (⭐️ 퓨어장고에서 form이 하던 역할을 drf에서는 시리얼라이저가 대체한다! 유효성 검사 이런 거 다 해줌.)
         # drf에서는 request.data 를 사용하여 클라이언트가 요청에 보낸 데이터를 받을 수 있다.
-        serializer = PostSerializer(data=data)
+        # request.user를 시리얼라이저에서 사용할 수 있도록 context에 담아 전달
+        serializer = PostSerializer(data=request.data, context={'request': request})
+        
         # 입력데이터의 유효성이 검증되면, (raise_exception=True : 만약 유효하지 않으면 drf가 알아서 상태코드 400(Bad request)와 함께 에러나는 이유를 내려준다.)
         if serializer.is_valid(raise_exception=True):
+            # 💊 디버깅 코드
+            print(f"\n\nValidated Data: {serializer.validated_data}\n\n") 
             # ⭐️ save 메서드는 JSON 상태 그대로 DB 에 저장하는 것이 아니라, '역직렬화' 과정을 거쳐 우리가 아는 기본적인 형태의 Post 모델의 인스턴스로 저장한다 ⭐️
+            # 지금 시리얼라이저에서 create 메서드를 오버라이드 했으니 save 메서드를 호출할 때 그리로 넘어간다.
             serializer.save()
+            # 💊 디버깅 코드
+            print(f"\n\nSaved Post ID: {serializer.instance.id}\n\n")  # 저장된 포스트 ID 출력(시리얼라이저 객체 자체에는 author 가 없으니 조심해야 한다!)
             # DB에는 역직렬화해서 저장하지만, 응답을 줄 때는 201 상태코드(created)와 함꼐 직렬화된 데이터를 준다. (그래야 프론트엔드가 이 데이터 받아서 다른 작업에 활용함!)
             return Response(serializer.data, status.HTTP_201_CREATED)
 

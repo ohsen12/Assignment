@@ -103,9 +103,9 @@ REST_FRAMEWORK = {
 
 # JWT 유효기간 설정 
 SIMPLE_JWT = {
-    # 요청할 때마다 인증을 위해 헤더에 포함해야 하는 토큰 (만료시간 현재 30분으로 잡음)
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    # 엑세스 토큰이 만료되었을 때, 새로 엑세스 토큰을 발급받기 위한 토큰 (만료시간 하루로 잡음)
+    # 요청할 때마다 인증을 위해 헤더에 포함해야 하는 토큰
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1440),
+    # 엑세스 토큰이 만료되었을 때, 새로 엑세스 토큰을 발급받기 위한 토큰
     # 만일 리프레시 토큰까지 만료되었다면 다시 인증(로그인)과정이 필요함
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     

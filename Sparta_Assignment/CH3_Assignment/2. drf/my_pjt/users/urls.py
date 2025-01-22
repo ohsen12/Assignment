@@ -11,25 +11,28 @@ app_name = "users"
 
 urlpatterns = [
     
-    # 회원가입
+    # 회원가입 (Create)
     # as_view() 메서드를 통해 뷰 클래스 안의 http 요청에 따른 메서드가 실제 요청을 처리하는 뷰 함수로 변환되어 URL 패턴과 연결된다.
     path("signup/", views.UserSignupView.as_view(), name="signup"),
     
-    # JWT를 사용한 로그인 로직
+    # 사용자 인증 로직
+    
+    # JWT를 사용한 로그인 로직 
     # 이 url 에서 JSON 데이터에 회원의 username과 password를 담아 POST 요청으로 보내면, TokenObtainPairView는 이를 통해 인증(로그인)하고, 인증에 성공하면 액세스 토큰과 리프레시 토큰을 생성하여 반환한다.
     path("login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     # 엑세스 토큰이 만료된 경우, 클라이언트는 이 url 에서 리프레시 토큰을 사용해 새로운 액세스 토큰을 발급 받는다.
-    # 이 url에 리프레시 토큰을 담아 send하면 자동으로 TokenRefreshView로 넘어가서 새로운 리프레시 토큰을 발급해준다.
+    # 이 url에 refresh 라는 이름으로 리프레시 토큰을 담아 send하면 자동으로 TokenRefreshView로 넘어가서 새로운 리프레시 토큰을 발급해준다.
+    # 이를 통해 새로운 리프레시 토큰과 엑세스 토큰을 발급 받으면 이제 새로운 엑세스 토큰을 사용해서 작업해야 한다.
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     
     # JWT 를 사용한 로그아웃 로직
     # 클라이언트는 로그아웃을 요청할 때 리프레시 토큰을 POST 방식으로 서버에 보낸다
     path("logout/", views.UserLogoutView.as_view(), name="logout"),
     
-    # 회원정보 수정
+    # 회원정보 수정 (Update)
     path("user_update/", views.UserUpdateView.as_view(), name="user_update"),
     
-    # 회원탈퇴
+    # 회원탈퇴 (Delete)
     path("user_delete/", views.UserDeleteView.as_view(), name="user_delete"),
     
     

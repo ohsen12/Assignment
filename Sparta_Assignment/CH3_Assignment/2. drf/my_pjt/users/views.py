@@ -16,8 +16,8 @@ class UserSignupView(APIView):
         # 이제 이 데이터가 UserCreationSerializer의 data 매개변수로 전달됨. data=request.data 이렇게 적어놓은 거 보이지 !!
         # 이 시점부터 시리얼라이저는 data를 기반으로 검증을 진행하거나, 나중에 save() 메서드를 호출해서 해당 데이터를 이용해 모델 인스턴스를 생성할 준비를 하게 됨!
         # 물론 이 코드 자체만으로는 유효성 검사를 진행하는 게 아님! 단지 바인딩 시리얼라이저만 만들어놨을 뿐.
-        # request.data는 일반 텍스트 데이터를 처리하고, request.FILES는 파일 업로드 데이터를 처리한다. 회원가입 시 이미지 파일도 포함되므로 request.FILES를 함께 넘겨줘야 한다.
-        serializer = UserCreationSerializer(data=request.data, files=request.FILES)
+        # 💡 당연히, 이미지 파일을 넘겨받았으니까 request.FILES 해야된다고 생각했는데 사실 files는 Serializer에서만 사용하는 인자이고, ModelSerializer는 내부적으로 files를 처리할 수 있기 때문에 files를 data와 함께 전달할 필요는 없다.. 라고 한다.
+        serializer = UserCreationSerializer(data=request.data)
         # 유효성 검사
         # ⭐️ is_valid 메서드 호출 시, 먼저 시리얼라이저 자체에서 필드 별 검증 로직을 수행하고, 시리얼라이저의 추가 검증로직인 validate 메서드가 실행됨 ⭐️ validate()는 전체 데이터를 추가적으로 검증하는, DRF가 특정 이름으로 호출하도록 설계된 메서드 ❗️ 일개 메서드가 아님. (이 메서드들이 DRF의 유효성 검사 프로세스에서 호출되는 시점은 이미 프레임워크 내부적으로 정해져 있기 때문에, 우리가 따로 호출하지 않아도 작동함.)
         # validate 메서드에서 password와 password2가 같은지 확인하고 실패하면 오류메세지를 반환한다.
