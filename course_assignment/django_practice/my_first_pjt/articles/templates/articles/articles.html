@@ -11,7 +11,11 @@
             </button>
         <br><br> 
     {% else %}
-        <a href="{% url 'accounts:login' %}">로그인하고 글 작성하러 가기</a><br><br>
+        <a href="{% url 'accounts:login' %}">
+            <button type="submit" class="btn btn-outline-dark">
+                로그인하고 글 작성하러 가기
+            </button>
+        </a><br><br>
     {% endif %}
     
     <hr>
