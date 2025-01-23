@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 from . import config
+# 임포트하고 워크벤치에서 커넥트하고 명령어 세 개 입력해서 실행됐는지 확인하고 여기서 다시 마이그레이트 해줘야 함
+import my_pjt.my_settings as my_settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,12 +86,7 @@ WSGI_APPLICATION = 'my_pjt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DATABASES = my_settings.DATABASES
 
 # 커스텀 유저 모델 설정
 AUTH_USER_MODEL = "users.CustomUser"
