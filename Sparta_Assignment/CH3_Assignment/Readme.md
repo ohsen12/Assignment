@@ -119,6 +119,15 @@
 
 </details>
 
+<details>
+    <summary>
+       데이터베이스
+    </summary>
+   
+  - SQLite3에서 PostgreSQL or MySQL로 마이그레이션
+
+</details>
+
 <hr>
 
 과제를 진행하며 학습에 필요한 주석들을 각각의 코드위에 상세히 달아놓았다.
