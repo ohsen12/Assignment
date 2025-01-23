@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Post,Comment
 from django.contrib.auth import get_user_model
+from users.serializers import UserSerializer
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -127,13 +128,13 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         # 모델 중에서 어떤 필드를 직렬화할 건데?
         # comments 필드 추가
-        fields = ['id', 'title', 'content', 'author', 'created_at', 'updated_at', 'comments']
+        fields = ['id', 'title', 'content', 'author', 'created_at', 'updated_at', 'comments','likes_count']
     
     
     # likes_count 필드를 위한 메서드 정의
     def get_likes_count(self, obj):
         '''
-        self : 시리얼라이저 객체이고
+        self : 시리얼라이저 객체
         obj : 해당 시리얼라이저가 처리하는 모델(post) 인스턴스, 즉 특정 게시글 객체
         
         이 시리얼라이저 객체가 post 모델이랑 연결되어 있으니까 모델에 정의되어 있는 메서드를 사용할 수 있음!
@@ -153,5 +154,56 @@ class PostSerializer(serializers.ModelSerializer):
         validated_data['author'] = user  
         # 부모 클래스인 ModelSerializer의 create 메서드를 호출하여, validated_data를 직접 Post 모델 인스턴스로 변환하고, 이를 DB에 저장
         return super().create(validated_data)
+    
+
+# 게시글에 좋아요를 누른 회원목록 조회를 위한 시리얼라이저
+class LikedUsersSerializer(serializers.ModelSerializer):
+    # 좋아요 누른 회원목록 조회를 위한 필드 추가해서
+    liked_users = serializers.SerializerMethodField()
+    
+    class Meta:
+        # 게시글 모델을 시리얼라이즈(직렬화)하겠다.
+        model = Post
+        # 시리얼라이저에서 추가한 필드를 직렬화하겠다.
+        fields = ["liked_users"]
+        
+    # liked_users 필드를 위한 메서드 정의
+    def get_liked_users(self, obj):
+        '''
+        self : 시리얼라이저 객체
+        obj : 해당 시리얼라이저가 처리하는 모델(post) 인스턴스, 즉 특정 게시글 객체
+        
+        주석 처리 부분 설명:
+        obj.likes.all()을 바로 반환하면, 결과로 나오는 것은 User 객체들의 QuerySet인데, 
+        QuerySet은 JSON으로 바로 변환될 수 없다.
+        QuerySet 객체는 데이터베이스에서 받아온 객체들의 모음일 뿐, 이를 JSON 형식으로 변환하려면 직렬화가 필요하다.
+        직렬화는 Python 객체를 JSON으로 변환하는 과정이기 때문에, 
+        직렬화된 데이터를 응답으로 보내려면 UserSerializer를 사용하여 각 User 객체를 JSON으로 변환해야 한다.
+        
+        API에서 응답을 반환할 때 QuerySet 자체가 아니라, (기본적으로는) 직렬화된 JSON 데이터를 반환해야 하므로 UserSerializer를 사용해 변환하는 것이다.
+        
+        여기서 예를 들어, 예를 들어, User 객체의 id, username 등의 필드를 반환하려면 UserSerializer를 사용해서 원하는 필드를 직렬화해야 한다.
+        즉, UserSerializer를 통해 명시적으로 어떤 정보를 포함할지를 지정해줘야 한다.
+        
+        잠깐❗️⭐️❗️ 
+        시리얼라이저에서 반환하는 응답은 반드시 JSON 데이터 형식일 필요는 없고, 클라이언트가 기대하는 형식만 맞춰주면 된다!
+        대부분의 API는 JSON 형식을 사용하지만, 기본적으로 시리얼라이저는 다양한 형식으로 데이터를 반환할 수 있다.
+        리스트, 딕셔너리, 직렬화된 객체 ...
+        
+        즉, 클라이언트가 예상하는 형식에 맞게 데이터를 반환하기만 하면 된다.
+        '''
+        # 좋아요를 누른 모든 유저의 객체를 가져와서 (⭐️ 특정 게시글 객체의 likes 필드를 다 가져와 (유저모델과 다대다 관계로 연결되어 있는 필드니까, 결국 유저 객체를 가져오는 것.))
+        liked_users = obj.likes.all()
+        
+        # # ⭐️ UserSerializer를 사용하여 직렬화된 유저 목록 반환
+        # return UserSerializer(liked_users, many=True).data
+
+        # 리스트 컴프리헨션을 사용하여 각 유저 객체의 username 을 뽑아낸다.
+        # 시리얼라이저가 직렬화된 JSON 응답을 반환해야 되는데 리스트를 반환해도 되는 거냐고? 
+        # JSON 데이터가 아니라고 해도, 응답으로 전송해도 클라이언트가 알아서 처리한다. (실제로는 클라이언트가 기대하는 응답 형식이 있겠지)
+        # 단순히 유저네임만 필요한 경우 user.username만 반환하는 리스트로 충분하고, 직렬화된 JSON 데이터는 필요하지 않다는 것.
+        # 하지만 유저에 대한 추가적인 정보(예: email, id 등)가 필요하다면, 위에 주석 처리한 코드처럼 UserSerializer를 사용해서 직렬화된 데이터를 반환하는 것이 더 적절하다.
+        return [user.username for user in liked_users]
+    
     
 

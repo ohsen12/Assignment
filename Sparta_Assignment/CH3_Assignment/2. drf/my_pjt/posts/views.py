@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from .serializers import PostSerializer, CommentSerializer, LikedUsersSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 
@@ -191,10 +191,27 @@ class LikePostAPIView(APIView):
     # 로그인한 사용자만 접근 가능
     permission_classes = [IsAuthenticated] 
     
-    # 좋아요 생성하기 
+    # 코드 중복 방지
+    def get_post(self, post_pk):
+        # post_pk에 해당하는 게시글 가져오기
+        return get_object_or_404(Post, pk=post_pk)
+    
+    # ✅ 해당 게시글에 달린 좋아요 개수는 게시글 상세 API에서 조회 가능하다.
+    
+    # 상세 게시글에 좋아요 누른 회원목록 조회
+    def get(self, request, post_pk):
+        # 일단 해당 게시글 갖고와
+        post = self.get_post(post_pk)
+        # 게시글 좋아요 누른 회원목록 직렬화해서
+        serializer = LikedUsersSerializer(post)
+        # 응답으로 넘겨주기
+        return Response(serializer.data)
+        
+    
+    # 좋아요 생성 
     def post(self, request, post_pk):
         # 일단 해당 게시글 갖고와
-        post = Post.objects.get(pk=post_pk)
+        post = self.get_post(post_pk)
 
         # 해당 게시글의 likes 필드에 이미 현재 유저가 존재하는 상황이라면 (이미 해당 게시글에 좋아요를 누른 상황)
         if post.likes.filter(id=request.user.id).exists():
@@ -207,15 +224,15 @@ class LikePostAPIView(APIView):
             post.likes.add(request.user)
             return Response({"detail": "좋아요가 추가되었습니다."}, status=status.HTTP_200_OK)
 
-
+    # 좋아요 삭제
     def delete(self, request, post_pk):
         # 일단 해당 게시글 갖고와
-        post = Post.objects.get(pk=post_pk)
+        post = self.get_post(post_pk)
 
         # 해당 게시글의 likes 필드에 현재 유저가 존재하지 않는 상황이라면 (if not False > if True 로 되어 조건문 실행)
         if not post.likes.filter(id=request.user.id).exists():
             # 좋아요를 누르지도 않았는데 이 url 패턴으로 DELETE 요청을 보내면 안되세요 🙏
-            return Response({"detail": "헌재 유저는 해당 게시글에 좋아요를 누르지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "헌재 유저는 이 게시글에 좋아요를 누르지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
         # 해당 게시글의 likes 필드에 현재 유저가 존재하는 상황이라면 (if not True > if False 로 되어 else 문으로 넘어옴)
         else:
             # likes 필드에서 현재 유저 삭제해주기
