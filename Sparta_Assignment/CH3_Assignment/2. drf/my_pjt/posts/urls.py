@@ -19,4 +19,7 @@ urlpatterns = [
     # 특정 댓글 조회, 수정, 삭제
     path('<int:post_pk>/comments/<int:comment_pk>/', views.CommentAPIView.as_view(), name='comment_detail'),
 
+    # 좋아요 추가 및 취소 API (이 url 로 요청을 보내면 각각의 HTTP 메서드에 따라 좋아요 로직을 수행한다.)
+    path('<int:post_pk>/like/', views.LikePostAPIView.as_view(), name='like'),
+    
 ]

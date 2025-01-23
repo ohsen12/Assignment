@@ -84,26 +84,41 @@ class PostSerializer(serializers.ModelSerializer):
     
     게시글 API에서 author 필드는 다음과 같은 형태로 포함된다.
     {
-        "id": 1,
-        "title": "Sample Post",
-        "content": "This is a sample post.",
+        "id": 5,
         "author": {
-            "id": 42,
-            "username": "example_user"
+            "id": 1,
+            "username": "admin"
         },
-        "created_at": "2025-01-21T12:00:00Z",
-        "updated_at": "2025-01-21T12:30:00Z"
+        "post": {
+            "id": 2,
+            "title": "첫 번째 포스트"
+        },
+        "content": "댓글 달게요"
     }
-
+    
     Post 모델의 author 필드를 별도로 정의하지 않으면, 기본적으로 작성자의 ID만 반환된다. 
     (그냥 Post 인스턴스만 직렬화해도 이미 외래키로 연결시켜놨으니까 작성자가 누구인지도 직렬화되긴 되네.. 
     근데 author 의 pk값만 담기니까, username 과 같이 좀 더 구체적인 정보를 담아주고 싶어서 사용하는 거군)
+    
+    cf. serializers.SerializerMethodField란?
+    - DRF에서 제공하는 특수한 필드
+    - 직렬화 과정에서 동적으로 값을 계산하거나 생성할 때 사용
+    - 모델에 존재하지 않는 필드라도 시리얼라이저 결과에 포함시킬 수 있다.
+    
+    사용방법?
+    
+    - 시리얼라이저 클래스에 SerializerMethodField를 선언.
+    - 해당 필드 이름에 맞는 get_<field_name> 메서드를 정의.
+    - DRF는 메서드를 호출하여 반환된 값을 필드 값으로 설정.
     '''
     # ⭐️ 이미 Post 모델에 존재하는 필드(외래키 필드가 있으면 역참조 필드가 자동으로 생성되지 ~)를 관련 시리얼라이저를 사용하여 내용을 덮어씌우는 것. (여기서는 작성자와 댓글에 대해서 구체적인 정보를 포함하도록 하고 싶어서.)
     # read_only=True는 작성자 정보가 클라이언트에서 수정되지 않도록 설정해주는 역할
     author = AuthorSerializer(read_only=True)
     # 게시글에 달린 댓글들을 직렬화하여 포함
     comments = CommentSerializer(many=True, read_only=True)
+    
+    # ⭐️ 좋아요 개수를 위한 필드 추가 (💡 SerializerMethodField를 사용하면, 원래 모델에 없는 필드도 직렬화 결과에 추가할 수 있다 !)
+    likes_count = serializers.SerializerMethodField() 
     
     
     # 설정 정보를 정의하기 위한 내부 클래스
@@ -113,6 +128,21 @@ class PostSerializer(serializers.ModelSerializer):
         # 모델 중에서 어떤 필드를 직렬화할 건데?
         # comments 필드 추가
         fields = ['id', 'title', 'content', 'author', 'created_at', 'updated_at', 'comments']
+    
+    
+    # likes_count 필드를 위한 메서드 정의
+    def get_likes_count(self, obj):
+        '''
+        self : 시리얼라이저 객체이고
+        obj : 해당 시리얼라이저가 처리하는 모델(post) 인스턴스, 즉 특정 게시글 객체
+        
+        이 시리얼라이저 객체가 post 모델이랑 연결되어 있으니까 모델에 정의되어 있는 메서드를 사용할 수 있음!
+        ⭐️ 시리얼라이저는 기본적으로 특정 모델 인스턴스를 다루기 때문에, 해당 인스턴스의 메서드에 접근이 가능하다.
+        
+        결과적으로 해당 게시글의 좋아요 수를 반환하는 PostSerializer의 메서드이다.
+        '''
+        return obj.get_likes_count()
+    
     
     # ⭐️ 클라이언트에서 author 필드를 보내지 않아도 로그인한 사용자가 자동으로 작성자로 설정되기 위한 오버라이딩
     # 뷰에서 처리하는 방법도 있는데, 그냥 한번에 시리얼라이저에서 해결하는 것이 더 좋은 코드라고 한다.

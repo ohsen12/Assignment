@@ -181,3 +181,44 @@ class CommentAPIView(APIView):
         comment = self.get_comment(post, comment_pk)
         comment.delete()
         return Response({"message": f"Comment {comment_pk} deleted."}, status=status.HTTP_204_NO_CONTENT)
+    
+    
+# 좋아요
+class LikePostAPIView(APIView):
+    '''
+    posts/<int:post_pk>/like/ 로 요청을 보내면 각각의 HTTP 메서드에 따라 좋아요 로직을 수행한다.
+    '''
+    # 로그인한 사용자만 접근 가능
+    permission_classes = [IsAuthenticated] 
+    
+    # 좋아요 생성하기 
+    def post(self, request, post_pk):
+        # 일단 해당 게시글 갖고와
+        post = Post.objects.get(pk=post_pk)
+
+        # 해당 게시글의 likes 필드에 이미 현재 유저가 존재하는 상황이라면 (이미 해당 게시글에 좋아요를 누른 상황)
+        if post.likes.filter(id=request.user.id).exists():
+            # 이미 좋아요를 눌렀는데 또 좋아요 생성하겠다고 이 url 패턴으로 POST 요청을 보내면 안되세요 🙏
+            return Response({"detail": "해당 유저는 이미 이 게시글에 좋아요를 눌렀습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        # 해당 게시글의 likes 필드에 현재 유저가 존재하지 않는다면 (해당 게시글에 좋아요를 누르지 않은 상황)
+        else:
+            # likes 필드에 현재 유저 추가해주기
+            # add()는 ManyToManyField에서 중간 테이블에 새로운 관계를 추가하는 작업을 수행한다.
+            post.likes.add(request.user)
+            return Response({"detail": "좋아요가 추가되었습니다."}, status=status.HTTP_200_OK)
+
+
+    def delete(self, request, post_pk):
+        # 일단 해당 게시글 갖고와
+        post = Post.objects.get(pk=post_pk)
+
+        # 해당 게시글의 likes 필드에 현재 유저가 존재하지 않는 상황이라면 (if not False > if True 로 되어 조건문 실행)
+        if not post.likes.filter(id=request.user.id).exists():
+            # 좋아요를 누르지도 않았는데 이 url 패턴으로 DELETE 요청을 보내면 안되세요 🙏
+            return Response({"detail": "헌재 유저는 해당 게시글에 좋아요를 누르지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        # 해당 게시글의 likes 필드에 현재 유저가 존재하는 상황이라면 (if not True > if False 로 되어 else 문으로 넘어옴)
+        else:
+            # likes 필드에서 현재 유저 삭제해주기
+            # remove()는 ManyToManyField에서 중간 테이블의 관계를 삭제하는 작업을 한다.
+            post.likes.remove(request.user)
+            return Response({"detail": "좋아요가 취소되었습니다."}, status=status.HTTP_200_OK)

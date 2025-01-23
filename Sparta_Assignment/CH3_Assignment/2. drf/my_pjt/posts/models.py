@@ -15,6 +15,26 @@ class Post(models.Model):
     # auto_now=True : 행(레코드)이 생성되거나 '저장될 때마다' 해당 필드에 현재 날짜와 시간이 자동으로 설정됨. 즉, 레코드가 변경될 때마다 이 필드는 업데이트된다.
     updated_at = models.DateTimeField(auto_now=True)
     
+    # ⭐️ 좋아요 필드 (좋아요를 누른 사용자들을 Many-to-Many 관계로 관리)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_posts', blank=True)
+    
+    # 해당 게시글의 좋아요 수를 반환하는 메서드
+    def get_likes_count(self):
+        '''
+        self는 현재 Post 모델의 인스턴스(특정 게시글)를 가리킨다.
+        self.likes는 이 Post 인스턴스와 연결된 User 객체들의 QuerySet을 반환한다.
+        
+        예를 들어, 
+        post = Post.objects.get(id=1)
+        post.likes.all() 는 해당 게시글에 좋아요를 누른 사용자들의 리스트를 반환한다.
+        
+        count()는 Django ORM에서 쿼리셋의 행 개수를 반환하는 메서드이다.
+        따라서, post.likes.count()는 현재 게시글에 좋아요를 누른 사용자의 수를 반환한다.
+        
+        get_likes_count는 단순히 likes.count()의 결과를 반환한다.
+        '''
+        return self.likes.count()
+    
 
 class Comment(models.Model):
     # ⭐️ 어떤 게시글에 달린 댓글인지 연결해주기 위해 게시글 모델을 참조하는 외래키 사용
