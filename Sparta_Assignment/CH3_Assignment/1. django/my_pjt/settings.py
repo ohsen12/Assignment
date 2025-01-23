@@ -130,10 +130,11 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
 # Media files
-# 미디어를 처리를 위한 URL
-MEDIA_URL = "/media/"
-# 업로드한 파일이 저장되는 디렉토리 경로를 지정. 업로드 파일은 데이터베이스에 저장되지 않으며 실제 저장되는 것을 파일의 경로
-MEDIA_ROOT = BASE_DIR / "media"
+# 미디어 파일 URL (클라이언트가 접근하는 URL)
+MEDIA_URL = '/media/'
+
+# 미디어 파일의 실제 저장 경로 (서버 파일 시스템 경로)
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
