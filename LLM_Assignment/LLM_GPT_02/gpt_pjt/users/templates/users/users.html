@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{%block content%}
+    <br>
+    <h1> ☺️ 여기는 사용자를 위한 페이지입니다.</h1>
+    <br>
+
+    {% for user in users  %}
+    
+        <a href="profile/{{ user.username }}/">
+                <button type="button" class="btn btn-secondary" style="background-color: white; border-color: pink; color: black">
+                    🌸 {{ user.username }}의 페이지 🌸</button>
+        </a>
+
+        <br><br>
+
+    {% endfor %}
+
+    <hr>
+    
+    <a href="{%url 'articles:index'%}">
+        <button type="button" class="btn btn-secondary" style="background-color: Lightblue; border-color: Lightblue; color: white;">홈(index)으로 가기</button>
+    </a>
+    
+{%endblock content%}

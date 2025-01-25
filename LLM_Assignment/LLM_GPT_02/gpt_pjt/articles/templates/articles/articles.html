@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>📖 이곳은 아티클 페이지입니다. </h1>
+    
+    {% if request.user.is_authenticated %}
+        <br>
+        <a href="{% url 'articles:create' %}"> {#앵커 태그는 GET 방식임!!#}
+            <button type="button" class="btn btn-secondary" style="background-color: LemonChiffon; border-color: LemonChiffon; color: gray">
+                새로운 아티클 작성하러 가기
+            </button>
+        <br><br> 
+    {% else %}
+        <a href="{% url 'accounts:login' %}">
+            <button type="submit" class="btn btn-outline-dark">
+                로그인하고 글 작성하러 가기
+            </button>
+        </a><br><br>
+    {% endif %}
+    
+    <hr>
+
+    {% for article in articles %} {#여기서 articles는 뷰 함수에서 context로 받은 것#}
+
+        <a href="{% url 'articles:article_detail' article.pk %}"> {#글제목 클릭하면 이동할 수 있게 앵커태그 안에 넣어주고 url에 해당 pk값 경로 변수로 할당하기#}
+            <button type="button" class="btn btn-secondary" style="background-color: MintCream; border-color: MintCream; color: gray">
+                📄 {{article.title}} - {{article.author.username}}
+            </button>
+        </a> 
+        <p>좋아요 {{ article.like_count }}개 </p>
+
+        <form action="{% url 'articles:like' article.pk %}" method="POST">
+            {% csrf_token %}
+            {% if request.user in article.like_users.all %}
+            <button type="submit" class="btn btn-outline-white">🖤</button>
+            {% else %}
+            <button type="submit" class="btn btn-outline-white">❤️</button>
+            {% endif %}
+        </form>
+
+        <hr>
+    {% endfor %}
+
+    <a href="{% url 'articles:index' %}">
+        <button type="button" class="btn btn-secondary" style="background-color: Lightblue; border-color: Lightblue; color: white;">
+        홈(index)으로 돌아가기</button>
+    </a>
+{%endblock content%}

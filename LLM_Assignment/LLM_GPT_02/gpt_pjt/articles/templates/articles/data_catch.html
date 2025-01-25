@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{%block content%}
+<br>
+<h1>🧤 이곳은 데이터를 수신하는 페이지입니다. </h1>
+
+<h3>현재 데이터</h3>
+<p>현재 데이터는: ⭐️ {{message}} ⭐️ </p>
+
+<a href="{% url 'articles:data-throw' %}">
+    <button type="button" class="btn btn-secondary" style="background-color: Lightblue; border-color: Lightblue; color: white;">데이터 전송 페이지로 가기</button></a>
+
+{%endblock content%}

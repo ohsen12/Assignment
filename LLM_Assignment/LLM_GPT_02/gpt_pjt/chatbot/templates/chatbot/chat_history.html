@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>📝 GPT와의 대화기록</h1>
+<br>
+{# 본인의 대화 기록을 들고 온 것이 존재하는 지 확인 (요청 유저 본인의 대화 기록이 이전에 존재하는가?) #}
+{% if messages.exists %}
+
+    {% for message in messages %}
+        <ul>
+            <li>
+                <p>회원: {{ message.user }}</p>
+                <p>User: {{ message.user_input }}</p>
+                <p>GPT: {{ message.gpt_response }}</p>
+                <hr>
+            </li>
+        </ul>
+    {% endfor %}
+
+{% else %}
+
+    <br>
+    <p>아직 {{ request.user }}님의 대화 기록이 없습니다 🥺</p>
+    <p>어서 대화를 시작해보세요!</p>
+    <br>
+
+{% endif %}
+
+
+<a href="{% url 'chatbot:chat_view' %}">
+    <button type="button" class="btn btn-outline-dark">
+        새로운 대화 시작
+    </button>    
+</a>
+
+<br><br>
+
+<form action="{% url "chatbot:chat_delete" %}" method="POST">
+    {% csrf_token %}    
+    <button type="submit" class="btn btn-outline-dark">
+        대화 기록 전체 삭제
+    </button> 
+</form>
+
+{% endblock content %}
+
+
+
