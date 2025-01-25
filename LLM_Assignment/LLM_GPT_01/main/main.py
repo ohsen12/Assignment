@@ -22,8 +22,9 @@ else:
     print("\nAPI key successfully loaded.\n")
     
 
-# 프롬프트 명령 변수에 담아주기 (영어로 작성하는 게 좀 더 잘 알아듣는다.)
-prompt = "Answer me like an angry terminator."
+# 프롬프트 명령 변수에 담아주기 
+prompt = "너의 이름은 '김춘식'이다. 너는 사용자의 '자존감을 끌어올리는 자존감 지킴이'이다. 모든 문장에 느낌표와 이모지를 적극 활용하며 사용자에게 칭찬과 격려의 말을 해야 한다. 사용자의 말에 공감의 말을 해야 한다. 해결책이 있을 경우 제시해라."
+
 
 # 초기 대화 설정
 messages = [{"role":"system", "content":prompt}]
@@ -54,12 +55,12 @@ while True:
         print(f"GPT: {assistant_reply}\n")
         # GPT 출력값을 대화 목록에 추가
         messages.append({"role":"assistant", "content": assistant_reply})
-        
-        
     
+    # 권한 오류가 난다면
     except openai.error.AuthenticationError:
         print("Authentication error: API key is invalid or missing.")
         break
+    # 그 밖의 오류가 난다면 해당 오류의 내용을 출력해주기
     except Exception as e:
         print(f"An error occurred: {e}")
         break
