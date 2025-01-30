@@ -17,6 +17,10 @@ import os
 from dotenv import load_dotenv
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import sqlite3  # SQLite 사용
+# 단어 추출을 위한 간단한 방법은 정규표현식을 사용하는 것이다. 이 방법을 사용하면 문장에서 알파벳으로 이루어진 단어들만 추출할 수 있다.
+import re 
+# 많이 등장하는 단어의 통계 그래프를 그리기 위함
+import matplotlib.pyplot as plt
 
 # 로그의 기본 설정을 DEBUG 수준(DEBUG는 가장 낮은 수준의 상세한 정보를 기록한다.)으로 설정 (이렇게 하면 DEBUG 이상의 수준의 로그 메시지가 출력된다.)
 logging.basicConfig(level=logging.DEBUG)
@@ -167,6 +171,9 @@ outputs = model.generate(input_ids=inputs["input_ids"], max_length=150)
 # skip_special_tokens=True: 생성된 텍스트에서 특수 토큰(예: [PAD], [UNK] 등)을 제외하고 출력한다.
 generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
+# 📦 SQLite DB 연결 및 테이블 생성
+create_db()  # 💡 conversations 테이블이 없으면 자동 생성
+
 # 대화 내용 DB에 저장
 save_conversation_to_db("user", input_data["question"]) # 사용자 질문 저장
 save_conversation_to_db("computer", generated_text) # 모델의 응답 저장
@@ -181,3 +188,136 @@ end_time = time.time()
 execution_time = end_time - start_time
 # 최종 실행 시간 출력 (.2f는 소수점 이하 2자리까지 표시하도록 하는 포맷 지정자)
 print(f'\n실행 시간 : {execution_time:.2f}초\n')
+
+
+# 🔡  단어 저장을 위한 words 테이블 생성함수
+def create_word_table():
+    # DB에 연결
+    conn = sqlite3.connect('chat_db.sqlite')
+    cursor = conn.cursor()
+
+    # 단어 테이블 생성 (UNIQUE 제약 조건을 추가하여 같은 단어가 여러 번 저장되지 않도록, )
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS words (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            word TEXT NOT NULL UNIQUE,
+            count INTEGER DEFAULT 1  -- 단어 등장 횟수를 저장하는 컬럼
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+
+# 🔡 단어 추출 함수 (정규표현식 사용)
+def extract_words(text):
+    '''
+    text를 받아 거기서 단어만 추출하여 소문자로 변환한 뒤 리스트로 반환하는 함수이다.
+    
+    re.findall(r'\b\w+\b', text.lower()): 텍스트에서 단어를 추출하는 정규 표현식이다.
+    \b: 단어의 경계를 나타낸다. (단어 앞뒤에 공백이나 구두점이 있는 지점)
+    \w+: 알파벳, 숫자, 밑줄(_)로 이루어진 단어를 찾는다.
+    text.lower(): 대소문자를 구분하지 않기 위해 소문자로 변환한다.
+    '''
+    # 정규표현식으로 알파벳과 숫자를 포함한 단어만 추출
+    return re.findall(r'\b\w+\b', text.lower())
+
+
+# 🔡 추출한 단어들을 DB에 저장하는 함수
+def save_words_to_db(words):
+    '''
+    이 함수는 단어 목록을 받아서 words 테이블에 저장한다.
+    단어는 word 컬럼에 하나씩 저장된다.
+    
+    이 테이블은 대화에서 추출한 단어들을 저장할 words 테이블을 먼저 만들어야 한다. 
+    
+    create_word_table() 함수를 실행하면 단어 저장을 위한 테이블이 데이터베이스에 생성된다.
+    
+    ON CONFLICT(word): 이 SQL 구문은 단어가 이미 테이블에 존재하면, 해당 단어의 count 값을 증가시킨다. 
+    word가 중복될 경우 자동으로 count가 1씩 증가하도록 하는 UPDATE 문이 실행된다.
+    '''
+    # DB에 연결
+    conn = sqlite3.connect('chat_db.sqlite')
+    cursor = conn.cursor()
+
+    # 단어 저장 (단어를 단일 테이블에 저장)
+    for word in words:
+        # 이미 존재하는 단어인지 확인 후, 존재하면 count를 증가시키고, 없으면 새로 삽입
+        cursor.execute('''
+            INSERT INTO words (word) 
+            VALUES (?)
+            ON CONFLICT(word) DO UPDATE SET count = count + 1
+        ''', (word,))
+    
+    conn.commit()
+    conn.close()
+
+
+# 단어 테이블 생성
+create_word_table()
+
+# 생성된 대화 내용에서 단어 추출
+words = extract_words(generated_text)
+
+# 단어 목록을 DB에 저장
+save_words_to_db(words)
+
+
+# 📊 단어 등장 횟수의 통계를 내기 위한 함수
+def get_top_words_from_db(limit=10):
+    '''
+    words 테이블에서 단어의 등장 횟수를 기준으로 상위 N개 단어를 가져온다.
+    '''
+    conn = sqlite3.connect('chat_db.sqlite')
+    cursor = conn.cursor()
+
+    # 등장 횟수를 기준으로 상위 limit개 단어를 내림차순으로 정렬
+    cursor.execute('''
+        SELECT word, count
+        FROM words
+        ORDER BY count DESC
+        LIMIT ?
+    ''', (limit,))
+
+    # 결과를 가져옴
+    top_words = cursor.fetchall()
+    
+    conn.close()
+
+    return top_words
+
+
+# 📊 상위 N개 단어를 그래프로 나타내기
+def plot_top_words(top_words):
+    '''
+    DB에서 가장 많이 언급된 상위 단어에 대한 막대 그래프를 그리는 함수
+    '''
+    if not top_words:  # 데이터가 없으면 메시지 출력 후 함수 종료
+        print("📉 데이터가 없습니다. 단어를 먼저 저장하세요!")
+        return
+
+    # 단어와 등장 횟수를 리스트로 분리
+    words, counts = zip(*top_words)  # 리스트 언패킹을 사용하여 분리
+
+    # 그래프 그리기
+    plt.figure(figsize=(10, 6))
+    plt.bar(words, counts, color='skyblue')  # 가독성을 위해 가로 막대 대신 세로 막대 사용
+    plt.xlabel('단어')
+    plt.ylabel('단어 등장 횟수')
+    plt.title('가장 많이 언급된 상위 단어')
+
+    # x축 레이블 회전 (단어가 겹치는 걸 방지)
+    plt.xticks(rotation=45)
+
+    # 그래프 출력
+    plt.show()
+    
+    
+# 상위 10개 단어 가져오기
+top_words = get_top_words_from_db(10)
+
+# 상위 단어 그래프 그리기
+plot_top_words(top_words)
+
+
+
