@@ -16,6 +16,7 @@ import time
 import os
 from dotenv import load_dotenv
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import sqlite3  # SQLite 사용
 
 # 로그의 기본 설정을 DEBUG 수준(DEBUG는 가장 낮은 수준의 상세한 정보를 기록한다.)으로 설정 (이렇게 하면 DEBUG 이상의 수준의 로그 메시지가 출력된다.)
 logging.basicConfig(level=logging.DEBUG)
@@ -50,6 +51,47 @@ model = AutoModelForCausalLM.from_pretrained(
 
 # 💊 모델 로딩 완료 로그
 logging.debug("모델 로딩 완료")
+
+# 📦 SQLite DB 연결 및 테이블 생성 함수
+def create_db():
+    '''
+    SQLite 데이터베이스를 생성하고, conversations라는 테이블을 만든다.
+    테이블은 conversation_id, speaker (주체자), message (대화 내용) 컬럼을 가진다.
+    '''
+    # SQLite 데이터베이스 연결 (파일이 없으면 자동으로 생성됨)
+    conn = sqlite3.connect('chat_db.sqlite')
+    cursor = conn.cursor()
+    
+    # 대화 내용 저장을 위한 테이블 생성 (💡 테이블이 없으면 새로 생성)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS conversations (
+            conversation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            speaker TEXT NOT NULL,
+            message TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+# 📦 대화 내용을 DB에 저장하는 함수
+def save_conversation_to_db(speaker, message):
+    '''
+    대화의 주체자와 내용을 받아서, 이를 conversations 테이블에 저장한다.
+    speaker는 "user" 또는 "computer"로 구분되며, message는 대화 내용을 의미한다.
+    '''
+    
+    # DB에 연결
+    conn = sqlite3.connect('chat_db.sqlite')
+    cursor = conn.cursor()
+    
+    # 대화 내용 INSERT (cursor.execute()로 SQL 명령을 실행)
+    cursor.execute('''
+        INSERT INTO conversations (speaker, message) 
+        VALUES (?, ?)
+    ''', (speaker, message))
+    
+    conn.commit()
+    conn.close()
 
 # 프롬프트 템플릿 (모델이 주어진 질문에 대해 답변을 생성하는 형식을 정의한 템플릿)
 # {question} 자리에 사용자가 입력한 질문을 넣을 수 있다.
@@ -93,7 +135,14 @@ outputs = model.generate(input_ids=inputs["input_ids"], max_length=150)
 # outputs[0]: 모델이 생성한 첫 번째 텍스트 시퀀스
 # ⭐️ tokenizer.decode(): '숫자로 된 토큰'을 다시 '사람이 읽을 수 있는 텍스트로' 변환한다.
 # skip_special_tokens=True: 생성된 텍스트에서 특수 토큰(예: [PAD], [UNK] 등)을 제외하고 출력한다.
-print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+generated_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+# 대화 내용 DB에 저장
+save_conversation_to_db("user", input_data["question"]) # 사용자 질문 저장
+save_conversation_to_db("computer", generated_text) # 모델의 응답 저장
+
+# 대화 출력
+print(generated_text)
 
 # 종료 시간 기록
 end_time = time.time()
