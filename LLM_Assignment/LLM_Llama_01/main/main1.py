@@ -52,17 +52,31 @@ model = AutoModelForCausalLM.from_pretrained(
 # 💊 모델 로딩 완료 로그
 logging.debug("모델 로딩 완료")
 
+
 # 📦 SQLite DB 연결 및 테이블 생성 함수
 def create_db():
     '''
-    SQLite 데이터베이스를 생성하고, conversations라는 테이블을 만든다.
-    테이블은 conversation_id, speaker (주체자), message (대화 내용) 컬럼을 가진다.
+    이 함수는 SQLite 데이터베이스를 생성하고, conversations라는 테이블을 만든다.
+    대화 내용을 저장할 테이블이 존재하지 않으면 새로 생성하며, 존재하면 기존 테이블을 그대로 사용한다.
+    
+    테이블은 conversation_id (PRIMARY KEY로 지정되어, 각 대화는 고유한 ID를 가지게 된다.), 
+    speaker (주체자. "user" 또는 "computer"), message (대화 내용) 컬럼을 가진다.
+    
+    sqlite3.connect()를 호출하여 SQLite 데이터베이스 파일인 chat_db.sqlite에 연결한다. 
+    만약 chat_db.sqlite 파일이 존재하지 않으면, 이 명령으로 파일이 자동으로 생성된다.
+    
+    커서(cursor)는 SQL 명령을 데이터베이스에 실행하기 위한 객체다. 
+    conn.cursor()로 데이터베이스 작업을 할 수 있는 커서를 만든다.
+    
+    cursor.execute()로 SQL 쿼리를 실행하여 conversations 테이블을 만든다.
+    commit()은 커서로 실행한 SQL 명령을 데이터베이스에 실제로 적용하는 명령이다.
+    모든 작업이 끝난 후, conn.close()로 데이터베이스 연결을 종료한다.
     '''
     # SQLite 데이터베이스 연결 (파일이 없으면 자동으로 생성됨)
     conn = sqlite3.connect('chat_db.sqlite')
     cursor = conn.cursor()
     
-    # 대화 내용 저장을 위한 테이블 생성 (💡 테이블이 없으면 새로 생성)
+    # 대화 내용 저장을 위한 테이블 생성 (💡 IF NOT EXISTS: 테이블이 이미 존재하면 새로 만들지 않도록 하며, 테이블이 없으면 새로 생성)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS conversations (
             conversation_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,11 +87,26 @@ def create_db():
     conn.commit()
     conn.close()
 
+
 # 📦 대화 내용을 DB에 저장하는 함수
 def save_conversation_to_db(speaker, message):
     '''
     대화의 주체자와 내용을 받아서, 이를 conversations 테이블에 저장한다.
-    speaker는 "user" 또는 "computer"로 구분되며, message는 대화 내용을 의미한다.
+    speaker는 "user" 또는 "computer"로 구분되며, message는 실제로 주고 받은 대화 내용을 의미한다.
+    
+    sqlite3.connect('chat_db.sqlite')로 chat_db.sqlite 데이터베이스에 연결한다. 
+    이 파일이 없다면, 자동으로 생성된다. 
+    
+    conn.cursor()로 커서 객체를 만든다. 커서는 SQL 명령을 실행할 때 필요한 객체로, 데이터베이스와의 상호작용을 담당한다.
+    
+    cursor.execute()로 SQL 명령을 실행한다.
+    INSERT INTO: conversations 테이블에 새로운 레코드를 추가하는 SQL 명령이다.
+    ?는 파라미터 바인딩을 위한 자리 표시자이다. 이 자리에 실제 값인 speaker와 message가 들어간다.
+    즉, INSERT INTO conversations (speaker, message) VALUES (?, ?)는 **speaker**와 **message**를 테이블의 각 컬럼에 삽입하는 명령이다.
+    
+    commit()은 데이터베이스에 변경 사항을 반영하는 명령이다. 이 단계에서 INSERT된 대화 내용이 실제로 데이터베이스에 저장된다.
+    
+    모든 작업이 끝나면, conn.close()를 호출하여 데이터베이스 연결을 종료한다. 이를 통해 연결된 리소스가 해제된다.
     '''
     
     # DB에 연결
@@ -92,6 +121,7 @@ def save_conversation_to_db(speaker, message):
     
     conn.commit()
     conn.close()
+
 
 # 프롬프트 템플릿 (모델이 주어진 질문에 대해 답변을 생성하는 형식을 정의한 템플릿)
 # {question} 자리에 사용자가 입력한 질문을 넣을 수 있다.
