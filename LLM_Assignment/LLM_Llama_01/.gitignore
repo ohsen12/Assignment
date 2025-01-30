@@ -6,6 +6,8 @@ config.py
 simpletest.py
 .env
 data/
+sample.txt
+chat_db.sqlite
 
 ### Django ###
 *.log
@@ -15,7 +17,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media
+media/
 static/
 
 # If your build process includes running collectstatic, then you probably don't need or want to include staticfiles/
