@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API key 설정 (내 운영체제에 있는 OPEN_API_KEY 라는 이름의 환경변수를 가지고 와서 API의 키로 설정해)
-# ⭐️ simpletest.py 에서 키를 코드에 직접 노출했던 것과 달리, 실제로는 이런 식으로 가져와서 사용해야 한다!
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
