@@ -175,8 +175,8 @@ RAG는 두 단계로 작동한다:
 
 ## 프로젝트에서의 CoT 기법 적용
 
-[main1.py]() 에서는 프롬프트를 한 가지 직무에 대해서 길고 상세하게 작성하여 GPT 모델을 실행하고,
-[main2.py]() 에서는 main1.py의 프롬프트에 CoT 기법을 적용하여 각 업무를 수행해야 하는 이유와 목적을 단계적으로 설명한다.
+[main1.py](https://github.com/ohsen12/Assignment/blob/main/LLM_Assignment/LLM_GPT_03/main/main1.py) 에서는 프롬프트를 한 가지 직무에 대해서 길고 상세하게 작성하여 GPT 모델을 실행하고,
+[main2.py](https://github.com/ohsen12/Assignment/blob/main/LLM_Assignment/LLM_GPT_03/main/main2.py) 에서는 main1.py의 프롬프트에 CoT 기법을 적용하여 각 업무를 수행해야 하는 이유와 목적을 단계적으로 설명한다.
 
 ### 두 프롬프트의 차이점
 
