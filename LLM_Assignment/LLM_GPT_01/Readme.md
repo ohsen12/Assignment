@@ -77,20 +77,20 @@ Transformer는 기존 RNN/LSTM과 달리 Self-Attention 메커니즘을 활용�
 #### 🔹 OpenAI와 Transformer의 관계
 1. GPT (Generative Pre-trained Transformer)
 
-- OpenAI가 Transformer 구조를 기반으로 개발한 언어 모델이다.
-- GPT-1 → GPT-2 → GPT-3 → GPT-3.5 → GPT-4 로 발전해왔다.
-- 기본적으로 Decoder-only Transformer 아키텍처를 사용한다.
+   - OpenAI가 Transformer 구조를 기반으로 개발한 언어 모델이다.
+   - GPT-1 → GPT-2 → GPT-3 → GPT-3.5 → GPT-4 로 발전해왔다.
+   - 기본적으로 Decoder-only Transformer 아키텍처를 사용한다.
 
 2. Self-Attention & Causal Masking
 
-- Transformer의 핵심 기능인 Self-Attention을 활용해 문맥을 이해한다.
-- GPT는 미래 단어를 보지 못하도록 Causal Masking을 적용해 자연스럽게 텍스트를 생성한다.
+   - Transformer의 핵심 기능인 Self-Attention을 활용해 문맥을 이해한다.
+   - GPT는 미래 단어를 보지 못하도록 Causal Masking을 적용해 자연스럽게 텍스트를 생성한다.
 
 3. 사전 훈련 & 미세 조정
 
-- GPT 모델은 대량의 텍스트 데이터로 사전 훈련(Pre-training) 된다.
-- 이후 특정 작업에 맞게 미세 조정(Fine-tuning) 가능하다.
-- ChatGPT는 RLHF(강화학습 기반 피드백 학습) 방식으로 더 자연스러운 대화를 학습했다.
+   - GPT 모델은 대량의 텍스트 데이터로 사전 훈련(Pre-training) 된다.
+   - 이후 특정 작업에 맞게 미세 조정(Fine-tuning) 가능하다.
+   - ChatGPT는 RLHF(강화학습 기반 피드백 학습) 방식으로 더 자연스러운 대화를 학습했다.
 
 
 #### 🔹 Transformer 모델의 주요 구성 요소
@@ -132,33 +132,33 @@ Transformer는 RNN처럼 순차적으로 데이터를 처리하지 않기 때문
 
 1. BERT (Bidirectional Encoder Representations from Transformers)
 
-- 인코더 구조만 사용한다.
+   - 인코더 구조만 사용한다.
 
-- 문맥의 양방향 정보를 학습한다.
+   - 문맥의 양방향 정보를 학습한다.
 
-- 주로 문장 분류, 개체명 인식, 질의응답 작업에 사용된다.
+   - 주로 문장 분류, 개체명 인식, 질의응답 작업에 사용된다.
 
 2. ⭐️ GPT ⭐️(Generative Pre-trained Transformer)
 
-- 디코더 구조만 사용한다.
+   - 디코더 구조만 사용한다.
 
-- 문맥의 한 방향(왼쪽에서 오른쪽) 정보를 학습한다.
+   - 문맥의 한 방향(왼쪽에서 오른쪽) 정보를 학습한다.
 
-- 주로 텍스트 생성 작업에 사용된다.
+   - 주로 텍스트 생성 작업에 사용된다.
 
 3. T5 (Text-to-Text Transfer Transformer)
 
-- 인코더-디코더 구조를 모두 사용한다.
+   - 인코더-디코더 구조를 모두 사용한다.
 
-- 텍스트 입력과 출력 모두를 텍스트 형태로 처리한다.
+   - 텍스트 입력과 출력 모두를 텍스트 형태로 처리한다.
 
-- 번역, 요약, 문장 완성 등에 사용된다.
+   - 번역, 요약, 문장 완성 등에 사용된다.
 
 4. Vision Transformer (ViT)
 
-- Transformer를 이미지 처리에 적용한 모델이다.
+   - Transformer를 이미지 처리에 적용한 모델이다.
 
-- 이미지를 패치(patch) 단위로 분할하고, 이를 입력 시퀀스로 변환해 학습한다.
+   - 이미지를 패치(patch) 단위로 분할하고, 이를 입력 시퀀스로 변환해 학습한다.
 
 #### 🔹 Transformer의 응용 분야
 
