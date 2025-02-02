@@ -7,7 +7,6 @@ simpletest.py
 .env
 data/
 sample.txt
-images/
 
 ### Django ###
 *.log
