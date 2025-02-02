@@ -50,9 +50,21 @@ class Chat_With_GPTAPIView(APIView):
                 # ⭐️ 대화의 흐름을 기억하도록 하려면, 사용자의 이전 대화를 DB에서 불러와서 messages 리스트에 포함해야 한다.
                 previous_chats = Chat.objects.filter(user=user).order_by('-created_at')[:5]
 
-                messages = [{"role": "system", "content": "You are a helpful assistant."}]
+                # ✅ 시스템 메시지를 강화하여 특정 직무 질문만 받도록 설정
+                system_message = {
+                    "role": "system",
+                    "content": (
+                        "Your name is '찰스'. "
+                        "You are an assistant working at a traditional Korean tea café. "
+                        "Your job is to assist with questions related to traditional Korean drinks and café operations. "
+                        "If a question is unrelated to your role, politely decline to answer and suggest asking something about Korean tea instead."
+                    )
+                }
+
+                messages = [system_message]
                 
-                # ⏰ 대화 기록을 messages 리스트에 추가
+                
+                # ⏰ 회원의 이전 대화 기록을 messages 리스트에 추가
                 # DB에서 불러온 대화 기록을 messages 매개변수에 추가(messages 매개변수는 리스트 안에 여러 개의 딕셔너리가 있는 구조이다.)
                 for chat in reversed(previous_chats):  # 오래된 기록부터 추가해야 흐름 유지됨
                     messages.append({"role": "user", "content": chat.user_input})
@@ -61,6 +73,7 @@ class Chat_With_GPTAPIView(APIView):
                 # 현재 사용자 입력 추가
                 messages.append({"role": "user", "content": user_input})
                 
+                # GPT 호출 (CoT 적용: 특정 직무가 아닐 경우 회피)
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
                     messages=messages
