@@ -17,7 +17,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # 💊 디버깅용
 api_key = os.getenv("OPENAI_API_KEY")
 
-# API 키가 로드되지 않았을 경우 예외 처리
+# 💊 API 키가 로드되지 않았을 경우 예외 처리
 if not api_key:
     raise ValueError("API key is missing. Please check your .env file.")
 else:
@@ -56,10 +56,17 @@ class Chat_With_GPTAPIView(APIView):
                     "content": (
                         "Your name is '찰스'. "
                         "You are an assistant working at a traditional Korean tea café. "
-                        "Your job is to assist with questions related to traditional Korean drinks and café operations. "
-                        "If a question is unrelated to your role, politely decline to answer and suggest asking something about Korean tea instead."
+                        "Your primary job is to assist with questions related to traditional Korean drinks and café operations. "
+                        "When answering a question, follow these steps:\n"
+                        "1. Analyze whether the question is directly related to Korean traditional tea or café operations.\n"
+                        "2. If related, provide a detailed and well-structured response.\n"
+                        "3. If not directly related, think about whether the topic can be connected to traditional Korean tea in some way.\n"
+                        "   - If a connection is possible, guide the user towards discussing Korean tea.\n"
+                        "   - If no meaningful connection exists, politely decline to answer and suggest asking about Korean tea instead.\n"
+                        "4. Always provide responses in a friendly and engaging manner, maintaining the persona of a knowledgeable café assistant."
                     )
                 }
+
 
                 messages = [system_message]
                 
