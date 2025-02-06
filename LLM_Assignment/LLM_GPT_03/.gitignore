@@ -8,6 +8,8 @@ simpletest.py
 data/
 sample.txt
 chat_db.sqlite
+gpt_venv/
+gpt_env/
 
 ### Django ###
 *.log
